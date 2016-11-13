@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="17dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment
+        android:id="@+id/top_usage"
+        android:tag="top_usage"
+        android:name="com.yyw.android.bestnow.ui.fragment.TopUsageFragment"
+        android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"/>
+
+    <fragment
+        android:name="com.yyw.android.bestnow.ui.fragment.EventListFragment"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/top_usage"
+        android:layout_centerHorizontal="true"
+        android:tag="event_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>

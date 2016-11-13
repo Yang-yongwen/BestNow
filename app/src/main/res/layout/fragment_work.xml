@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="17dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/work_title"
+        android:text="开始码代码吧!"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.yyw.android.bestnow.ui.view.CirclePicker
+        android:id="@+id/circle_picker"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/work_title"
+        android:layout_marginTop="47dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp" />
+
+    <TextView
+        android:id="@+id/work_time"
+        android:text="10:00"
+        android:textSize="40sp"
+        android:layout_below="@id/circle_picker"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/start_btn"
+        android:layout_below="@id/work_time"
+        android:text="开始"
+        android:layout_marginTop="27dp"
+        android:layout_centerHorizontal="true"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content" />
+
+
+</RelativeLayout>

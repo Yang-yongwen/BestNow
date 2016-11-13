@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CirclePicker">
+        <attr name="unCoveredPathWidth" format="dimension"/>
+        <attr name="coveredPathWidth" format="dimension"/>
+        <attr name="unCoveredPathColor" format="color"/>
+        <attr name="coveredPathColor" format="color"/>
+        <attr name="pickerRadius" format="dimension"/>
+        <attr name="divideCounts" format="integer"/>
+    </declare-styleable>
+</resources>

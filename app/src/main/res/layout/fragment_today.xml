@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.yyw.android.bestnow.ui.view.VerticalPager
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:scrollbars="none"
+    android:overScrollMode="never"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+      <com.yyw.android.bestnow.ui.view.ChildFixedHeightLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <fragment
+                android:tag="daily_info"
+                android:name="com.yyw.android.bestnow.ui.fragment.DailyInfoFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <fragment
+                android:tag="work"
+                android:name="com.yyw.android.bestnow.ui.fragment.WorkFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </FrameLayout>
+
+    </com.yyw.android.bestnow.ui.view.ChildFixedHeightLayout>
+
+
+</com.yyw.android.bestnow.ui.view.VerticalPager>
+
