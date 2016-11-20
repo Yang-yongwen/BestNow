@@ -1,4 +1,4 @@
-package com.yyw.android.bestnow.ui.view;
+package com.yyw.android.bestnow.view;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Point;

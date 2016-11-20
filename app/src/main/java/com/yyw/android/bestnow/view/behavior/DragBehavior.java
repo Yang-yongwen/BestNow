@@ -1,4 +1,5 @@
-package com.yyw.android.bestnow.ui.behavior;
+package com.yyw.android.bestnow.view.behavior;
+
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.IntDef;
@@ -6,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.MotionEventCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -57,9 +57,13 @@ public class DragBehavior<V extends View> extends CoordinatorLayout.Behavior<V> 
     private int lastY;
     private int lastDy;
     private int minHeight;
-    private int maxHeight=-1;
-    private @State int state;
+    private int maxHeight = -1;
+    private
+    @State
+    int state = STATE_COLLAPSED;
     private List<ScrollCalendarCallback> callbacks;
+    private boolean shouldProcessEvent = false;
+    private int parentHeight;
 
 
     public DragBehavior(Context context, AttributeSet attrs) {
@@ -81,7 +85,7 @@ public class DragBehavior<V extends View> extends CoordinatorLayout.Behavior<V> 
     public boolean layoutDependsOn(CoordinatorLayout parent, V child, View dependency) {
         if (dependency instanceof AppBarLayout) {
             dependencyRef = new WeakReference<View>(dependency);
-            childRef=new WeakReference<View>(child);
+            childRef = new WeakReference<View>(child);
             return true;
         }
         return false;
@@ -89,15 +93,15 @@ public class DragBehavior<V extends View> extends CoordinatorLayout.Behavior<V> 
 
     @Override
     public boolean onDependentViewChanged(CoordinatorLayout parent, V child, View dependency) {
-        int dependencyHeight=dependency.getHeight();
+        int dependencyHeight = dependency.getHeight();
 //        ViewCompat.offsetTopAndBottom(child,dependencyHeight);
-        child.setY(dependencyHeight+dependency.getTop());
-        float slideOffset=(float)(dependencyHeight-minHeight)/(float)(maxHeight-minHeight);
-        notifyOnSlideToListeners(dependency,slideOffset);
-        if (dependencyHeight==minHeight){
+        child.setY(dependencyHeight + dependency.getTop());
+        float slideOffset = (float) (dependencyHeight - minHeight) / (float) (maxHeight - minHeight);
+        notifyOnSlideToListeners(dependency, slideOffset);
+        if (dependencyHeight == minHeight) {
             setIntervalState(STATE_COLLAPSED);
         }
-        if (dependencyHeight==maxHeight){
+        if (dependencyHeight == maxHeight) {
             setIntervalState(STATE_EXPANDED);
         }
         return true;
@@ -105,11 +109,19 @@ public class DragBehavior<V extends View> extends CoordinatorLayout.Behavior<V> 
 
     @Override
     public boolean onLayoutChild(CoordinatorLayout parent, V child, int layoutDirection) {
-        parent.onLayoutChild(child,layoutDirection);
-        if (maxHeight==-1){
-            maxHeight=getDependencyHeight();
-            setDependencyHeight(maxHeight);
-            child.setY(maxHeight);
+        parent.onLayoutChild(child, layoutDirection);
+        if (maxHeight == -1) {
+            maxHeight = getDependencyHeight();
+            int initHeight;
+            if (state == STATE_COLLAPSED) {
+                initHeight = minHeight;
+            } else {
+                initHeight = maxHeight;
+            }
+            parentHeight=parent.getHeight();
+            setDependencyHeight(initHeight);
+            setChildHeight(parentHeight-minHeight);
+            child.setY(initHeight);
             child.requestLayout();
         }
         return true;
@@ -131,24 +143,27 @@ public class DragBehavior<V extends View> extends CoordinatorLayout.Behavior<V> 
                 activePointerId = MotionEvent.INVALID_POINTER_ID;
                 if (ignoreEvents) {
                     ignoreEvents = false;
-                    return false;
+                    shouldProcessEvent = false;
+                    return shouldProcessEvent;
                 }
                 break;
             case MotionEvent.ACTION_DOWN:
                 int x = (int) ev.getX();
                 int y = (int) ev.getY();
-                int dependencyHeight=getDependencyHeight();
+                int dependencyHeight = getDependencyHeight();
                 activePointerId = ev.getPointerId(ev.getActionIndex());
                 ignoreEvents = activePointerId == MotionEvent.INVALID_POINTER_ID
-                        || y<=dependencyHeight;
+                        || y <= dependencyHeight;
                 break;
         }
         lastX = (int) ev.getX();
         lastY = (int) ev.getY();
         if (getDependencyHeight() > actionBarHeight && !ignoreEvents) {
-            return true;
+            shouldProcessEvent = true;
+            return shouldProcessEvent;
         }
-        return false;
+        shouldProcessEvent = false;
+        return shouldProcessEvent;
     }
 
     private int getDependencyHeight() {
@@ -161,6 +176,9 @@ public class DragBehavior<V extends View> extends CoordinatorLayout.Behavior<V> 
 
     @Override
     public boolean onTouchEvent(CoordinatorLayout parent, V child, MotionEvent ev) {
+        if (!shouldProcessEvent) {
+            return false;
+        }
         int action = MotionEventCompat.getActionMasked(ev);
         if (action == MotionEvent.ACTION_DOWN) {
             return true;
@@ -168,25 +186,25 @@ public class DragBehavior<V extends View> extends CoordinatorLayout.Behavior<V> 
         if (action == MotionEvent.ACTION_DOWN) {
             reset();
         }
-        int height=getDependencyHeight();
+        int height = getDependencyHeight();
         if (action == MotionEvent.ACTION_MOVE && !ignoreEvents) {
             int dy = (int) ev.getY() - lastY;
-            int currentHeight=height+dy;
+            int currentHeight = height + dy;
             setDependencyHeight(currentHeight);
             setIntervalState(STATE_DRAGGING);
-            lastDy=dy;
+            lastDy = dy;
         }
-        if (action==MotionEvent.ACTION_CANCEL||action==MotionEvent.ACTION_UP){
+        if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
             setDependencyHeight(STATE_SETTLING);
             int finalHeight;
-            if (lastDy<0){
-                finalHeight=minHeight;
-            }else{
-                finalHeight=Math.abs(height-minHeight)>Math.abs(height-maxHeight)?
+            if (lastDy < 0) {
+                finalHeight = minHeight;
+            } else {
+                finalHeight = Math.abs(height - minHeight) > Math.abs(height - maxHeight) ?
                         maxHeight :
                         minHeight;
             }
-            smoothChangeHeight(height,finalHeight);
+            smoothChangeHeight(height, finalHeight);
         }
 
         lastX = (int) ev.getX();
@@ -195,12 +213,19 @@ public class DragBehavior<V extends View> extends CoordinatorLayout.Behavior<V> 
     }
 
     private void setDependencyHeight(int height) {
-        height=Math.max(height,minHeight);
-        height=Math.min(height,maxHeight);
+        height = Math.max(height, minHeight);
+        height = Math.min(height, maxHeight);
 
-        View dependency=dependencyRef.get();
-        dependency.getLayoutParams().height=height;
+        View dependency = dependencyRef.get();
+        dependency.getLayoutParams().height = height;
         dependency.getParent().requestLayout();
+    }
+
+    private void setChildHeight(int height){
+        height=Math.max(height,0);
+        View child=childRef.get();
+        child.getLayoutParams().height=height;
+        child.getParent().requestLayout();
     }
 
     private void reset() {
@@ -218,7 +243,7 @@ public class DragBehavior<V extends View> extends CoordinatorLayout.Behavior<V> 
         callbacks.add(calendarCallback);
     }
 
-    private void smoothChangeHeight(final int currentHeight,final int finalHeight){
+    private void smoothChangeHeight(final int currentHeight, final int finalHeight) {
         ValueAnimator animator = ValueAnimator.ofInt(0, 200);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             float lastHeight = currentHeight;
@@ -226,42 +251,44 @@ public class DragBehavior<V extends View> extends CoordinatorLayout.Behavior<V> 
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float height = currentHeight + (finalHeight - currentHeight) * animation.getAnimatedFraction();
-                setDependencyHeight((int)height);
+                setDependencyHeight((int) height);
                 lastHeight = height;
                 if (finalHeight == height) {
                     setIntervalState(finalHeight == minHeight ? STATE_COLLAPSED : STATE_EXPANDED);
                 }
             }
         });
-        int baseTime=200;
-        int time=baseTime*Math.abs(currentHeight-finalHeight)/(maxHeight-minHeight);
+        int baseTime = 200;
+        int time = baseTime * Math.abs(currentHeight - finalHeight) / (maxHeight - minHeight);
         animator.setDuration(time).start();
     }
 
-    public @State int getState(){
+    public
+    @State
+    int getState() {
         return state;
     }
 
-    public void setState(@State int state){
-        if (this.state==state){
+    public void setState(@State int state) {
+        if (this.state == state) {
             return;
         }
-        this.state=state;
-        if (dependencyRef==null||dependencyRef.get()==null){
+        this.state = state;
+        if (dependencyRef == null || dependencyRef.get() == null) {
             return;
         }
-        View dependency=dependencyRef.get();
-        int currentHeight=dependency.getHeight();
+        View dependency = dependencyRef.get();
+        int currentHeight = dependency.getHeight();
         int targetHeight;
-        if (state==STATE_COLLAPSED){
-            targetHeight=minHeight;
-        }else if (state==STATE_EXPANDED){
-            targetHeight=maxHeight;
-        }else {
+        if (state == STATE_COLLAPSED) {
+            targetHeight = minHeight;
+        } else if (state == STATE_EXPANDED) {
+            targetHeight = maxHeight;
+        } else {
             return;
         }
         setIntervalState(STATE_SETTLING);
-        smoothChangeHeight(currentHeight,targetHeight);
+        smoothChangeHeight(currentHeight, targetHeight);
     }
 
     private void setIntervalState(@State int state) {

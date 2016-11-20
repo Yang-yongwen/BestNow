@@ -1,4 +1,4 @@
-package com.yyw.android.bestnow.ui.behavior;
+package com.yyw.android.bestnow.appusage.behavior;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.IntDef;

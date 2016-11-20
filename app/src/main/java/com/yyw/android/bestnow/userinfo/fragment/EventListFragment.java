@@ -1,4 +1,4 @@
-package com.yyw.android.bestnow.ui.fragment;
+package com.yyw.android.bestnow.userinfo.fragment;
 
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.yyw.android.bestnow.R;
+import com.yyw.android.bestnow.archframework.BaseFragment;
 
 import butterknife.BindView;
 

@@ -1,0 +1,19 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_splash"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.yyw.android.bestnow.userinfo.activity.SplashActivity">
+
+    <include layout="@layout/view_calendar_app_bar"/>
+
+    <fragment
+        android:id="@+id/main_content"
+        android:name="com.yyw.android.bestnow.appusage.fragment.DailyUsageFragment"
+        app:layout_behavior="com.yyw.android.bestnow.view.behavior.DragBehavior"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</android.support.design.widget.CoordinatorLayout>

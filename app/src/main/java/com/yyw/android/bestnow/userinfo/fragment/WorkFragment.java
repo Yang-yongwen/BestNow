@@ -1,8 +1,9 @@
-package com.yyw.android.bestnow.ui.fragment;
+package com.yyw.android.bestnow.userinfo.fragment;
 
 import android.widget.Button;
 
 import com.yyw.android.bestnow.R;
+import com.yyw.android.bestnow.archframework.BaseFragment;
 
 import butterknife.BindView;
 

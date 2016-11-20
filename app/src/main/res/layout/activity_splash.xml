@@ -6,14 +6,14 @@
     android:id="@+id/activity_splash"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.yyw.android.bestnow.ui.activity.SplashActivity">
+    tools:context="com.yyw.android.bestnow.userinfo.activity.SplashActivity">
 
     <include layout="@layout/view_calendar_app_bar"/>
 
     <fragment
         android:id="@+id/main_content"
-        android:name="com.yyw.android.bestnow.ui.fragment.DailyPagerFragment"
-        app:layout_behavior="com.yyw.android.bestnow.ui.behavior.DragBehavior"
+        android:name="com.yyw.android.bestnow.userinfo.fragment.DailyPagerFragment"
+        app:layout_behavior="com.yyw.android.bestnow.view.behavior.DragBehavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

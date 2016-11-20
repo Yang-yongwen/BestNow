@@ -1,4 +1,4 @@
-package com.yyw.android.bestnow.ui.view;
+package com.yyw.android.bestnow.view;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;

@@ -1,4 +1,4 @@
-package com.yyw.android.bestnow.ui.adapter;
+package com.yyw.android.bestnow.userinfo.adapter;
 
 /**
  * Created by samsung on 2016/11/4.

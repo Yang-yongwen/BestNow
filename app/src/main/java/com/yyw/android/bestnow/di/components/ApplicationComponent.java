@@ -5,7 +5,7 @@ import com.yyw.android.bestnow.data.appusage.AppUsageAgent;
 import com.yyw.android.bestnow.di.modules.AppUsageModule;
 import com.yyw.android.bestnow.di.modules.ApplicationModule;
 import com.yyw.android.bestnow.di.modules.DaoDbModule;
-import com.yyw.android.bestnow.ui.activity.SplashActivity;
+import com.yyw.android.bestnow.userinfo.activity.SplashActivity;
 
 import javax.inject.Singleton;
 

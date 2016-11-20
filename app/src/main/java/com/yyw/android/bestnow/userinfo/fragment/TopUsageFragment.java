@@ -1,4 +1,4 @@
-package com.yyw.android.bestnow.ui.fragment;
+package com.yyw.android.bestnow.userinfo.fragment;
 
 
 import android.os.Bundle;
@@ -7,8 +7,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.yyw.android.bestnow.R;
+import com.yyw.android.bestnow.archframework.BaseFragment;
 import com.yyw.android.bestnow.data.dao.AppUsage;
-import com.yyw.android.bestnow.ui.view.TopUsageItemView;
+import com.yyw.android.bestnow.view.TopUsageItemView;
 
 import butterknife.BindView;
 

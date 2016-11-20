@@ -13,6 +13,9 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
+import rx.Observable;
+import rx.schedulers.Schedulers;
+
 /**
  * Created by samsung on 2016/10/28.
  */
@@ -83,11 +86,11 @@ public class UsageRepository {
                 ? getAppUsageFromDb(packageName)
                 : appUsages.get(packageName);
     }
-//
-//    public Observable<AppUsage> getAppUsageObservable(String packageName) {
-//        return Observable.just(getAppUsage(packageName))
-//                .subscribeOn(Schedulers.io());
-//    }
+
+    public Observable<AppUsage> getAppUsageObservable(String packageName) {
+        return Observable.just(getAppUsage(packageName))
+                .subscribeOn(Schedulers.io());
+    }
 
     private AppUsage getAppUsageFromDb(String packageName) {
         AppUsage appUsage = appUsageDao.queryBuilder()

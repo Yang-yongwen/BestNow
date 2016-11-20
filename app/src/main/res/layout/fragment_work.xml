@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <com.yyw.android.bestnow.ui.view.CirclePicker
+    <com.yyw.android.bestnow.view.CirclePicker
         android:id="@+id/circle_picker"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/work_title"

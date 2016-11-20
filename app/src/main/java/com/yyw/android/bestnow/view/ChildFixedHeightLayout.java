@@ -1,4 +1,4 @@
-package com.yyw.android.bestnow.ui.view;
+package com.yyw.android.bestnow.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;

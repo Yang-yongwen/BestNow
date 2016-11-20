@@ -1,4 +1,4 @@
-package com.yyw.android.bestnow.ui.fragment;
+package com.yyw.android.bestnow.userinfo.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 
 import com.yyw.android.bestnow.R;
+import com.yyw.android.bestnow.archframework.BaseFragment;
 
 import butterknife.BindView;
 
