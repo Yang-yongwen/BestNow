@@ -4,6 +4,7 @@ import com.yyw.android.bestnow.data.appusage.UsageRepository;
 import com.yyw.android.bestnow.data.dao.AppUsage;
 
 import java.util.Date;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -24,9 +25,8 @@ public class AppUsageModel implements AppUsageContract.Model {
 
 
     @Override
-    public Observable<AppUsage> queryAppUsage(Date start, Date end) {
-
-        return null;
+    public Observable<Map<String,AppUsage>> queryAppUsage(Date start, Date end) {
+        return usageRepository.getAppUsageObservableIn(start,end);
     }
 
     @Override

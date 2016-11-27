@@ -26,7 +26,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".appusage.activity.DailyUsageActivity" >
+        <activity
+            android:name=".appusage.activity.DailyUsageActivity"
+            android:exported="true">
         </activity>
 
         <service android:name=".data.appusage.UsageUpdateService"

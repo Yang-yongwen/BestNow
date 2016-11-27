@@ -8,6 +8,8 @@ import com.yyw.android.bestnow.data.dao.PerHourUsage;
 import com.yyw.android.bestnow.data.dao.PerHourUsageDao;
 import com.yyw.android.bestnow.executor.JobExecutor;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -102,14 +104,12 @@ public class UsageRepository {
         return appUsage;
     }
 
-
     public PerHourUsage getPerHourUsage(String packageName, long hourTime) {
         return perHourUsageDao.queryBuilder()
                 .where(PerHourUsageDao.Properties.PackageName.eq(packageName))
                 .where(PerHourUsageDao.Properties.Time.eq(hourTime))
                 .unique();
     }
-
 
     public void savePerHourUsage(final PerHourUsage... perHourUsage) {
         executor.execute(new Runnable() {
@@ -119,5 +119,70 @@ public class UsageRepository {
             }
         });
     }
+
+    public Observable<Map<String,AppUsage>> getAppUsageObservableIn(Date start,Date end){
+        return Observable.just(getAppUsagesIn(start,end))
+                .observeOn(Schedulers.io());
+    }
+
+    private Map<String,AppUsage> getAppUsagesIn(Date start,Date end){
+        Map<String,List<PerHourUsage>> perHourUsages=getPerHourUsageIn(start,end);
+        Map<String,AppUsage> result=new ArrayMap<>();
+        AppUsage appUsage;
+        for (Map.Entry<String,List<PerHourUsage>> entry:perHourUsages.entrySet()){
+            appUsage=convert(entry.getValue());
+            result.put(entry.getKey(),appUsage);
+        }
+        return result;
+    }
+
+    private Map<String,List<PerHourUsage>> getPerHourUsageIn(Date start,Date end){
+        long startTime=Utils.getDateStart(start);
+        long endTime=Utils.getDateEnd(end);
+
+        List<PerHourUsage> perHourUsages=perHourUsageDao.queryBuilder()
+                .where(PerHourUsageDao.Properties.Time.between(startTime,endTime))
+                .list();
+
+        Map<String,List<PerHourUsage>> result=new ArrayMap<>();
+        String packageName;
+        List<PerHourUsage> list=null;
+        for (PerHourUsage usage:perHourUsages){
+            packageName=usage.getPackageName();
+            if (result.containsKey(packageName)){
+                result.get(packageName).add(usage);
+            }else{
+                list=new ArrayList<>();
+                list.add(usage);
+                result.put(packageName,list);
+            }
+        }
+
+        return result;
+    }
+
+    private AppUsage convert(List<PerHourUsage> perHourUsages){
+        AppUsage appUsage=new AppUsage();
+        if (perHourUsages!=null&&perHourUsages.size()!=0){
+            long usageTime=0;
+            int launchCount=0;
+            long start=perHourUsages.get(0).getTime();
+            long end=start;
+            for (PerHourUsage usage:perHourUsages){
+                usageTime+=usage.getUsageTime();
+                launchCount+=usage.getLaunchCount();
+                start=Math.min(start,usage.getTime());
+                end=Math.max(end,usage.getTime());
+            }
+            appUsage.setPackageName(perHourUsages.get(0).getPackageName());
+            appUsage.setTotalUsageTime(usageTime);
+            appUsage.setTotalLaunchCount(launchCount);
+            appUsage.setStartRecordTime(start);
+            appUsage.setLastTimeUsed(end);
+        }
+        return appUsage;
+    }
+
+
 
 }

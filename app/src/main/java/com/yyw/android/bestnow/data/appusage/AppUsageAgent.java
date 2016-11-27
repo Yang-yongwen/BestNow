@@ -39,6 +39,11 @@ public class AppUsageAgent {
         setNextUpdateSchedule();
     }
 
+    public void update(){
+        LogUtils.d(TAG, "update!");
+        appUsageManager.update();
+    }
+
     private void setNextUpdateSchedule() {
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         JobInfo.Builder builder = new JobInfo.Builder(USAGE_UPDATE_JOB_ID,

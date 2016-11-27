@@ -6,6 +6,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.ArrayMap;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +40,26 @@ public class Utils {
 
         }
         return isSystemApp;
+    }
+
+    public static long getDateStart(Date date){
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR,0);
+        calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.SECOND,0);
+        calendar.set(Calendar.MILLISECOND,0);
+        return calendar.getTimeInMillis();
+    }
+
+    public static long getDateEnd(Date date){
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR,23);
+        calendar.set(Calendar.MINUTE,59);
+        calendar.set(Calendar.SECOND,59);
+        calendar.set(Calendar.MILLISECOND,0);
+        return calendar.getTimeInMillis();
     }
 
 }

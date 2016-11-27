@@ -16,16 +16,22 @@ import javax.inject.Inject;
 
 public class NowApplication extends Application {
     private static ApplicationComponent applicationComponent;
+    private static NowApplication instance;
     @Inject
     AppUsageAgent appUsageAgent;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        instance=this;
         Stetho.initializeWithDefaults(this);
         initializeInjector();
         appUsageAgent.init();
         appUsageAgent.startUpdate();
+    }
+
+    public static NowApplication getInstance(){
+        return instance;
     }
 
     private void initializeInjector() {

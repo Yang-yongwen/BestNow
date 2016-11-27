@@ -9,11 +9,18 @@
 
     <include layout="@layout/view_calendar_app_bar"/>
 
-    <fragment
+    <!--<fragment-->
+        <!--android:id="@+id/main_content"-->
+        <!--android:name="com.yyw.android.bestnow.appusage.fragment.DailyUsageFragment"-->
+        <!--app:layout_behavior="com.yyw.android.bestnow.view.behavior.DragBehavior"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"/>-->
+    <FrameLayout
         android:id="@+id/main_content"
         android:name="com.yyw.android.bestnow.appusage.fragment.DailyUsageFragment"
         app:layout_behavior="com.yyw.android.bestnow.view.behavior.DragBehavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
 
 </android.support.design.widget.CoordinatorLayout>

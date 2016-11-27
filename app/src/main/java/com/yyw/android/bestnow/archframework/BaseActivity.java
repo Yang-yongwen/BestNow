@@ -11,12 +11,15 @@ import android.widget.TextView;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.yyw.android.bestnow.R;
+import com.yyw.android.bestnow.data.appusage.AppUsageAgent;
 import com.yyw.android.bestnow.view.behavior.DragBehavior;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 
@@ -37,6 +40,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private View mainContent;
     private CompactCalendarView calendarView;
     private CompactCalendarView.CompactCalendarViewListener calendarViewListener;
+    @Inject AppUsageAgent appUsageAgent;
 
 
     @Override
@@ -141,6 +145,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (appUsageAgent!=null){
+            appUsageAgent.update();
+        }
+    }
 
     protected void onDayClick(Date dateClicked) {
 
