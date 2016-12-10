@@ -1,4 +1,4 @@
-package com.yyw.android.bestnow.appusage;
+package com.yyw.android.bestnow.appusage.dailyusage;
 
 import com.yyw.android.bestnow.data.dao.AppUsage;
 
@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import rx.Observer;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -15,14 +16,14 @@ import rx.subscriptions.CompositeSubscription;
  * Created by yangyongwen on 16/11/20.
  */
 
-public class AppUsagePresenter implements AppUsageContract.Presenter {
+public class DailyUsagePresenter implements DailyUsageContract.Presenter {
 
-    private AppUsageContract.View appUsageView;
-    private AppUsageContract.Model appUsageModel;
+    private DailyUsageContract.View appUsageView;
+    private DailyUsageContract.Model appUsageModel;
     private CompositeSubscription subscriptions;
 
     @Inject
-    AppUsagePresenter(AppUsageContract.View appUsageView,AppUsageContract.Model appUsageModel){
+    DailyUsagePresenter(DailyUsageContract.View appUsageView, DailyUsageContract.Model appUsageModel){
         this.appUsageView=appUsageView;
         this.appUsageModel=appUsageModel;
         subscriptions=new CompositeSubscription();
@@ -41,9 +42,11 @@ public class AppUsagePresenter implements AppUsageContract.Presenter {
 
     @Override
     public void loadUsage(Date start, Date end) {
-        appUsageModel.queryAppUsage(start,end)
+        Subscription subscribe= appUsageModel
+                .queryAppUsage(start,end)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(appUsagesObserver);
+        subscriptions.add(subscribe);
     }
 
     private final Observer<Map<String,AppUsage>> appUsagesObserver=new Observer<Map<String, AppUsage>>() {

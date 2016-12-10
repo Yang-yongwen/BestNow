@@ -27,7 +27,11 @@
         </activity>
 
         <activity
-            android:name=".appusage.activity.DailyUsageActivity"
+            android:name=".appusage.dailyusage.DailyUsageActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".appusage.singleappusage.AppDailyUsageActivity"
             android:exported="true">
         </activity>
 

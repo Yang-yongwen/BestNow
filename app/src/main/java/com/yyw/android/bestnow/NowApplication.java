@@ -3,6 +3,10 @@ package com.yyw.android.bestnow;
 import android.app.Application;
 
 import com.facebook.stetho.Stetho;
+import com.facebook.stetho.common.LogUtil;
+import com.yyw.android.bestnow.common.utils.LogUtils;
+import com.yyw.android.bestnow.common.utils.SPUtils;
+import com.yyw.android.bestnow.data.appusage.AppInfoProvider;
 import com.yyw.android.bestnow.data.appusage.AppUsageAgent;
 import com.yyw.android.bestnow.di.components.ApplicationComponent;
 import com.yyw.android.bestnow.di.components.DaggerApplicationComponent;
@@ -17,8 +21,11 @@ import javax.inject.Inject;
 public class NowApplication extends Application {
     private static ApplicationComponent applicationComponent;
     private static NowApplication instance;
+    private boolean isInit;
     @Inject
     AppUsageAgent appUsageAgent;
+    @Inject
+    SPUtils spUtils;
 
     @Override
     public void onCreate() {
@@ -26,8 +33,21 @@ public class NowApplication extends Application {
         instance=this;
         Stetho.initializeWithDefaults(this);
         initializeInjector();
-        appUsageAgent.init();
-        appUsageAgent.startUpdate();
+//        initAppUsage();
+        LogUtils.init();
+//        appUsageAgent.init();
+        if (appUsageAgent.isInit()){
+            appUsageAgent.startUpdate();
+        }
+    }
+
+    private void initAppUsage(){
+        isInit=spUtils.getBooleanValue("INIT_APP",false);
+        if (isInit=false){
+            appUsageAgent.init();
+            isInit=true;
+            spUtils.putBooleanValue("INIT_APP",isInit);
+        }
     }
 
     public static NowApplication getInstance(){
@@ -39,6 +59,18 @@ public class NowApplication extends Application {
                 .applicationModule(new ApplicationModule(this))
                 .build();
         applicationComponent.inject(this);
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        if (level>TRIM_MEMORY_RUNNING_CRITICAL){
+            releaseUnNeedMem();
+        }
+    }
+
+    private void releaseUnNeedMem(){
+        AppInfoProvider.getInstance().clear();
     }
 
     public static ApplicationComponent getApplicationComponent() {

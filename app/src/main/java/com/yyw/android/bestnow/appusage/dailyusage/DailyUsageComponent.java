@@ -1,6 +1,5 @@
-package com.yyw.android.bestnow.appusage;
+package com.yyw.android.bestnow.appusage.dailyusage;
 
-import com.yyw.android.bestnow.appusage.activity.DailyUsageActivity;
 import com.yyw.android.bestnow.archframework.FragmentScoped;
 
 import dagger.Subcomponent;
@@ -10,7 +9,7 @@ import dagger.Subcomponent;
  */
 
 @FragmentScoped
-@Subcomponent(modules = UsageModule.class)
-public interface AppUsageComponent {
+@Subcomponent(modules = DailyUsageModule.class)
+public interface DailyUsageComponent {
     void inject(DailyUsageActivity activity);
 }

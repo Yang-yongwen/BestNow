@@ -8,9 +8,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.yyw.android.bestnow.R;
+import com.yyw.android.bestnow.common.utils.LogUtils;
+import com.yyw.android.bestnow.common.utils.SPUtils;
 import com.yyw.android.bestnow.data.appusage.AppUsageAgent;
 import com.yyw.android.bestnow.view.behavior.DragBehavior;
 
@@ -28,10 +31,11 @@ import butterknife.ButterKnife;
  */
 
 public abstract class BaseActivity extends AppCompatActivity {
+    private static final String TAG = LogUtils.makeLogTag(BaseActivity.class);
     public static final int ACTION_BAR_TYPE_CALENDAR = 0;
     public static final int ACTION_BAR_TYPE_NORMAL = 1;
-    public SimpleDateFormat dateFormat = new SimpleDateFormat("d MMMM yyyy", Locale.getDefault());
-    private Toolbar toolbar;
+    public SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    protected Toolbar toolbar;
     private TextView titleTV;
     private DragBehavior behavior;
     private TextView datePickerTextView;
@@ -40,7 +44,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     private View mainContent;
     private CompactCalendarView calendarView;
     private CompactCalendarView.CompactCalendarViewListener calendarViewListener;
-    @Inject AppUsageAgent appUsageAgent;
+    @Inject
+    AppUsageAgent appUsageAgent;
+    @Inject
+    SPUtils spUtils;
+    private static int activityCount = -1;
 
 
     @Override
@@ -86,7 +94,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 }
             }
         });
-        calendarView=ButterKnife.findById(this,R.id.compactcalendar_view);
+        calendarView = ButterKnife.findById(this, R.id.compactcalendar_view);
         calendarView.setLocale(TimeZone.getDefault(), Locale.CHINA);
         calendarView.setShouldDrawDaysHeader(true);
         calendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
@@ -101,6 +109,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         });
         setSubtitle(dateFormat.format(new Date()));
+        setSupportActionBar(toolbar);
     }
 
     private void initBehavior() {
@@ -146,11 +155,65 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (activityCount ==-1){
+            LogUtils.d(TAG, "enter foreground");
+            appUsageAgent.update();
+            activityCount =0;
+        }
+        activityCount++;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        activityCount--;
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
-        if (appUsageAgent!=null){
-            appUsageAgent.update();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (isCalendarBarExpanded()) {
+            behavior.setState(DragBehavior.STATE_COLLAPSED);
         }
+
+        if (activityCount==0){
+            getWindow().getDecorView().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (activityCount == 0) {
+                        activityCount = -1;
+                        LogUtils.d(TAG, "enter background");
+                    }
+                }
+            }, 100);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isCalendarBarExpanded()) {
+            behavior.setState(DragBehavior.STATE_COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    private boolean isCalendarBarExpanded() {
+        return hasActionBar()
+                && actionBarType() == ACTION_BAR_TYPE_CALENDAR
+                && behavior != null
+                && behavior.getState() == DragBehavior.STATE_EXPANDED;
+    }
+
+    protected void showMessage(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     protected void onDayClick(Date dateClicked) {
@@ -160,6 +223,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onMonthScroll(Date firstDayOfNewMonth) {
 
     }
+
     protected int actionBarType() {
         return ACTION_BAR_TYPE_NORMAL;
     }
@@ -169,4 +233,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract int getContentView();
 
     protected abstract boolean hasActionBar();
+
+    protected Toolbar getToolbar() {
+        return toolbar;
+    }
 }

@@ -6,6 +6,7 @@ import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.util.ArrayMap;
 
+import com.yyw.android.bestnow.common.utils.SPUtils;
 import com.yyw.android.bestnow.data.dao.AppUsage;
 
 import java.util.Map;
@@ -20,21 +21,23 @@ public class AppUsageProvider {
     private static AppUsageProvider instance;
     Context context;
     UsageRepository repository;
+    AppUsageProviderNew newProvider;
 
-    public static AppUsageProvider getInstance(Context context, UsageRepository repository) {
-        if (instance == null) {
-            synchronized (AppUsageProvider.class) {
-                if (instance == null) {
-                    instance = new AppUsageProvider(context, repository);
-                }
-            }
-        }
-        return instance;
-    }
+//    public static AppUsageProvider getInstance(Context context, UsageRepository repository) {
+//        if (instance == null) {
+//            synchronized (AppUsageProvider.class) {
+//                if (instance == null) {
+//                    instance = new AppUsageProvider(context, repository);
+//                }
+//            }
+//        }
+//        return instance;
+//    }
 
-    public AppUsageProvider(Context context, UsageRepository repository) {
+    public AppUsageProvider(Context context, UsageRepository repository, SPUtils spUtils) {
         this.context = context;
         this.repository = repository;
+        newProvider=new AppUsageProviderNew(context,repository,spUtils);
     }
 
     public Map<String, Long> getBaseUsageTimes(long baseTime) {
@@ -48,22 +51,25 @@ public class AppUsageProvider {
 
     //获得从上次更新到当前时间,所有使用过的 app 的前台时间以及启动次数
     public Map<String, AppUsage> getAppUsageSinceLastUpdate(long baseTime, long lastUpdateTime, long currentTime) {
-        Map<String, UsageStats> usageStatsMap = getUsageStatsSinceBaseTime(baseTime, currentTime);
-        Map<String, Long> usageTimes = computeUsageTimeSinceLastUpdate(usageStatsMap);
-        Map<String, Integer> launchCounts = getLaunchCountsSinceLastUpdate(lastUpdateTime, currentTime);
 
-        Map<String, AppUsage> appUsageSinceLastUpdate = new ArrayMap<>();
-        AppUsage appUsage;
-        for (Map.Entry<String, Integer> entry : launchCounts.entrySet()) {
-            appUsage = new AppUsage();
-            appUsage.setPackageName(entry.getKey());
-            appUsage.setTotalLaunchCount(entry.getValue());
-            appUsage.setTotalUsageTime(usageTimes.get(entry.getKey()));
-            appUsage.setUpdateTime(currentTime);
-            appUsage.setLastTimeUsed(usageStatsMap.get(entry.getKey()).getLastTimeUsed());
-            appUsageSinceLastUpdate.put(entry.getKey(), appUsage);
-        }
-        return appUsageSinceLastUpdate;
+        return newProvider.getAppUsageBetween(lastUpdateTime,currentTime);
+
+//        Map<String, UsageStats> usageStatsMap = getUsageStatsSinceBaseTime(baseTime, currentTime);
+//        Map<String, Long> usageTimes = computeUsageTimeSinceLastUpdate(usageStatsMap);
+//        Map<String, Integer> launchCounts = getLaunchCountsSinceLastUpdate(lastUpdateTime, currentTime);
+//
+//        Map<String, AppUsage> appUsageSinceLastUpdate = new ArrayMap<>();
+//        AppUsage appUsage;
+//        for (Map.Entry<String, Integer> entry : launchCounts.entrySet()) {
+//            appUsage = new AppUsage();
+//            appUsage.setPackageName(entry.getKey());
+//            appUsage.setTotalLaunchCount(entry.getValue());
+//            appUsage.setTotalUsageTime(usageTimes.get(entry.getKey()));
+//            appUsage.setUpdateTime(currentTime);
+//            appUsage.setLastTimeUsed(usageStatsMap.get(entry.getKey()).getLastTimeUsed());
+//            appUsageSinceLastUpdate.put(entry.getKey(), appUsage);
+//        }
+//        return appUsageSinceLastUpdate;
     }
 
     private Map<String, UsageStats> getUsageStatsSinceBaseTime(long baseTime, long currentTime) {

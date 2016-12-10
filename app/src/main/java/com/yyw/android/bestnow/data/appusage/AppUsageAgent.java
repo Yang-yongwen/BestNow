@@ -4,7 +4,9 @@ import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
+import android.util.Log;
 
+import com.yyw.android.bestnow.common.utils.DateUtils;
 import com.yyw.android.bestnow.common.utils.LogUtils;
 import com.yyw.android.bestnow.common.utils.SPUtils;
 import com.yyw.android.bestnow.executor.JobExecutor;
@@ -20,27 +22,55 @@ import javax.inject.Singleton;
 @Singleton
 public class AppUsageAgent {
     private static final String TAG = LogUtils.makeLogTag(AppUsageAgent.class);
+    public static final String USAGE_INIT="usage_init";
     private static final int USAGE_UPDATE_JOB_ID = 0;
     Context context;
+    SPUtils spUtils;
+    JobExecutor jobExecutor;
     private AppUsageManager appUsageManager;
+    private boolean isInit;
 
     public AppUsageAgent(Context context, SPUtils spUtils, JobExecutor executor, UsageRepository repository) {
         appUsageManager = new AppUsageManager(context, spUtils, executor, repository);
         this.context = context;
+        this.spUtils=spUtils;
+        this.jobExecutor=executor;
+        isInit=spUtils.getBooleanValue(USAGE_INIT,false);
     }
 
     public void init() {
-        appUsageManager.init();
+        jobExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                LogUtils.d(TAG,"init!");
+                appUsageManager.init();
+                isInit=true;
+                spUtils.putBooleanValue(USAGE_INIT,isInit);
+                startUpdate();
+            }
+        });
+    }
+
+    public boolean isInit(){
+        return isInit;
     }
 
     public void startUpdate() {
-        LogUtils.d(TAG, "update!");
+        if (!isInit){
+            LogUtils.d(TAG,"not init yet");
+            return;
+        }
+        LogUtils.d(TAG, "update, time: "+ DateUtils.formatTime(System.currentTimeMillis()));
         appUsageManager.update();
         setNextUpdateSchedule();
     }
 
     public void update(){
-        LogUtils.d(TAG, "update!");
+        if (!isInit){
+            LogUtils.d(TAG,"not init yet");
+            return;
+        }
+        LogUtils.d(TAG, "update, time: "+ DateUtils.formatTime(System.currentTimeMillis()));
         appUsageManager.update();
     }
 
@@ -61,11 +91,13 @@ public class AppUsageAgent {
 
     private long getNextUpdateTime() {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 10);
-        calendar.add(Calendar.HOUR, 1);
+        calendar.add(Calendar.MINUTE, 1);
+//        calendar.set(Calendar.SECOND, 10);
+//        calendar.add(Calendar.HOUR, 1);
 //        calendar.add(Calendar.SECOND,5);
-        return calendar.getTimeInMillis();
+        long time=calendar.getTimeInMillis();
+        LogUtils.d(TAG,"next update time is: "+DateUtils.formatTime(time));
+        return time;
     }
 
 }

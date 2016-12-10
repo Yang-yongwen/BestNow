@@ -1,0 +1,15 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/view_normal_app_bar"/>
+
+    <FrameLayout
+        android:id="@+id/main_content"
+        android:name="com.yyw.android.bestnow.appusage.fragment.DailyUsageFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

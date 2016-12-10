@@ -11,7 +11,7 @@
 
     <!--<fragment-->
         <!--android:id="@+id/main_content"-->
-        <!--android:name="com.yyw.android.bestnow.appusage.fragment.DailyUsageFragment"-->
+        <!--android:name="com.yyw.android.bestnow.appusage.dailyusage.DailyUsageFragment"-->
         <!--app:layout_behavior="com.yyw.android.bestnow.view.behavior.DragBehavior"-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="match_parent"/>-->

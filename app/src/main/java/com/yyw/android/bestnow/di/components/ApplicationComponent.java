@@ -1,8 +1,10 @@
 package com.yyw.android.bestnow.di.components;
 
 import com.yyw.android.bestnow.NowApplication;
-import com.yyw.android.bestnow.appusage.AppUsageComponent;
-import com.yyw.android.bestnow.appusage.UsageModule;
+import com.yyw.android.bestnow.appusage.dailyusage.DailyUsageComponent;
+import com.yyw.android.bestnow.appusage.dailyusage.DailyUsageModule;
+import com.yyw.android.bestnow.appusage.singleappusage.AppDailyUsageComponent;
+import com.yyw.android.bestnow.appusage.singleappusage.SingleAppUsageModule;
 import com.yyw.android.bestnow.data.appusage.AppUsageAgent;
 import com.yyw.android.bestnow.di.modules.AppUsageModule;
 import com.yyw.android.bestnow.di.modules.ApplicationModule;
@@ -22,7 +24,8 @@ import dagger.Component;
 public interface ApplicationComponent {
     void inject(SplashActivity splashActivity);
     void inject(NowApplication nowApplication);
-    AppUsageComponent plus(UsageModule module);
+    DailyUsageComponent plus(DailyUsageModule module);
+    AppDailyUsageComponent plus(SingleAppUsageModule module);
 
     AppUsageAgent provideAppUsage();
 

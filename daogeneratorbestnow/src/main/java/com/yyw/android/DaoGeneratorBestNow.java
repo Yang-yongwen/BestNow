@@ -31,6 +31,7 @@ public class DaoGeneratorBestNow {
         appUsage.addLongProperty("lastTimeUsed");
         appUsage.addLongProperty("startRecordTime");
         appUsage.addLongProperty("updateTime");
+        appUsage.setHasKeepSections(true);
     }
 
     private static void addPerHourUsage(Schema schema){
@@ -38,6 +39,7 @@ public class DaoGeneratorBestNow {
         perHourUsage.addIdProperty();
         perHourUsage.addStringProperty("packageName");
         perHourUsage.addLongProperty("time");
+        perHourUsage.addStringProperty("formatTime");
         perHourUsage.addIntProperty("launchCount");
         perHourUsage.addLongProperty("usageTime");
     }

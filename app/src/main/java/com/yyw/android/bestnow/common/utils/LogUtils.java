@@ -21,9 +21,9 @@ import java.util.logging.LogRecord;
  */
 
 public class LogUtils {
-    private static final String LOG_TAG = "AppStatistic";
-    private static final String LOG_PREFIX = "AppStatistic_";
-    private static final String LOG_FILE_DIR = "AppStatistic_LOG";
+    private static final String LOG_TAG = "BestNow";
+    private static final String LOG_PREFIX = "BestNow_";
+    private static final String LOG_FILE_DIR = "BestNow_LOG";
     private static final int LOG_METHOD_COUNT = 2;
     private static final int LOG_METHOD_OFFSET = 1;
     private static final int LOG_FILE_LIMIT = 1024 * 1024 * 5;
@@ -91,6 +91,15 @@ public class LogUtils {
             return builder.toString();
         }
     };
+
+     String  buildFileLogMessage(String type, String message) {
+        date.setTime(System.currentTimeMillis());
+        StringBuilder builder = new StringBuilder();
+        builder.append("[").append(type).append("] ");
+        builder.append(formatter.format(date)).append(" ");
+        builder.append(message);
+        return builder.toString();
+    }
 
     private LogUtils() {
         nativeLogger = java.util.logging.Logger.getLogger(LOG_TAG);
@@ -177,7 +186,9 @@ public class LogUtils {
 
     public static void d(final String tag, String msg) {
         if (LOGGING_ENABLED) {
-            Logger.t(tag).d(msg);
+//            Logger.t(tag).d(msg);
+            Log.d(tag,msg);
+            instance.nativeLogger.info(instance.buildFileLogMessage("D",msg));
         }
     }
 }

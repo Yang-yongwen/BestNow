@@ -1,4 +1,4 @@
-package com.yyw.android.bestnow.appusage;
+package com.yyw.android.bestnow.appusage.dailyusage;
 
 import com.yyw.android.bestnow.archframework.BaseModel;
 import com.yyw.android.bestnow.archframework.BasePresenter;
@@ -14,7 +14,7 @@ import rx.Observable;
  * Created by yangyongwen on 16/11/19.
  */
 
-public interface AppUsageContract {
+public interface DailyUsageContract {
 
     interface View extends BaseView<Presenter> {
         void displayUsageData(Map<String,AppUsage> appUsages);

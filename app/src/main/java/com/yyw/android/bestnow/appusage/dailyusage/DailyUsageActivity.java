@@ -1,10 +1,11 @@
-package com.yyw.android.bestnow.appusage.activity;
+package com.yyw.android.bestnow.appusage.dailyusage;
+
+import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.view.View;
 
 import com.yyw.android.bestnow.NowApplication;
 import com.yyw.android.bestnow.R;
-import com.yyw.android.bestnow.appusage.UsageModule;
-import com.yyw.android.bestnow.appusage.AppUsagePresenter;
-import com.yyw.android.bestnow.appusage.fragment.DailyUsageFragment;
 import com.yyw.android.bestnow.archframework.BaseActivity;
 import com.yyw.android.bestnow.common.utils.ActivityUtils;
 
@@ -17,7 +18,21 @@ import javax.inject.Inject;
 public class DailyUsageActivity extends BaseActivity {
 
     @Inject
-    AppUsagePresenter presenter;
+    DailyUsagePresenter presenter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+        getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
 
     protected
     void setupActivityComponent(){
@@ -29,7 +44,7 @@ public class DailyUsageActivity extends BaseActivity {
         }
 
         NowApplication.getApplicationComponent()
-                .plus(new UsageModule(fragment))
+                .plus(new DailyUsageModule(fragment))
                 .inject(this);
     }
 

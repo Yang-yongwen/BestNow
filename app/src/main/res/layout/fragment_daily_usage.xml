@@ -13,11 +13,37 @@
         android:layout_width="match_parent"
         android:layout_height="0dp">
 
-        <lecho.lib.hellocharts.view.PieChartView
-            android:id="@+id/pie_chart"
+        <RelativeLayout
+            android:id="@+id/pie_chart_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-        </lecho.lib.hellocharts.view.PieChartView>
+            android:layout_height="match_parent">
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/pie_chart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" >
+            </com.github.mikephil.charting.charts.PieChart>
+
+            <ImageView
+                android:id="@+id/selected_app_icon"
+                android:src="@drawable/ic_add_box_white_24dp"
+                android:layout_marginTop="40dp"
+                android:clickable="true"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/pie_chart"
+                android:layout_width="60dp"
+                android:layout_height="60dp" />
+
+            <TextView
+                android:id="@+id/selected_app_usage_time"
+                android:text="1小时17分钟"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/selected_app_icon"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/list_chart"
@@ -32,6 +58,7 @@
         android:layout_width="match_parent"
         android:layout_height="70dp">
         <Button
+            android:id="@+id/show_pie"
             android:text="pie"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
@@ -39,6 +66,7 @@
             android:layout_height="wrap_content" />
 
         <Button
+            android:id="@+id/show_list"
             android:text="list"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"

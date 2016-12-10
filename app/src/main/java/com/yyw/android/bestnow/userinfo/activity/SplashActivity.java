@@ -2,35 +2,40 @@ package com.yyw.android.bestnow.userinfo.activity;
 
 import android.app.AppOpsManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.widget.Toast;
+import android.support.v7.app.AlertDialog;
 
 import com.yyw.android.bestnow.NowApplication;
 import com.yyw.android.bestnow.R;
 import com.yyw.android.bestnow.archframework.BaseActivity;
+import com.yyw.android.bestnow.common.utils.LogUtils;
+import com.yyw.android.bestnow.common.utils.SPUtils;
+import com.yyw.android.bestnow.data.appusage.AppUsageAgent;
 import com.yyw.android.bestnow.data.appusage.AppUsageManager;
-import com.yyw.android.bestnow.appusage.activity.DailyUsageActivity;
+import com.yyw.android.bestnow.appusage.dailyusage.DailyUsageActivity;
 
 import java.util.Date;
 
 import javax.inject.Inject;
 
 public class SplashActivity extends BaseActivity {
+    private static final String TAG= LogUtils.makeLogTag(SplashActivity.class);
     @Inject
     Context context;
     @Inject
-    AppUsageManager manager;
+    AppUsageAgent appUsageAgent;
+    @Inject
+    SPUtils spUtils;
+    private AlertDialog usagePermissionDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!checkUsagePermission()) {
-            requestUsageStatsPermission();
-        }
         setTitle("Best Now");
     }
 
@@ -64,7 +69,45 @@ public class SplashActivity extends BaseActivity {
         return ACTION_BAR_TYPE_CALENDAR;
     }
 
-    private boolean checkUsagePermission() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!hasUsagePermission()){
+            if (usagePermissionDialog==null){
+                usagePermissionDialog=buildDialog();
+            }
+            if (!usagePermissionDialog.isShowing()){
+                usagePermissionDialog.show();
+            }
+        }else {
+            if (!appUsageAgent.isInit()){
+                appUsageAgent.init();
+            }
+        }
+    }
+
+    private AlertDialog buildDialog(){
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        builder.setMessage(R.string.usage_permission_dialog_message)
+                .setTitle(R.string.usage_permission_dialog_title)
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestUsageStatsPermission();
+                    }
+                });
+        AlertDialog alertDialog=builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        return alertDialog;
+    }
+
+    private boolean hasUsagePermission() {
         boolean result = false;
         try {
             PackageManager packageManager = getPackageManager();
@@ -79,7 +122,6 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void requestUsageStatsPermission() {
-        Toast.makeText(context, "请授予允许读取应用状态权限", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);

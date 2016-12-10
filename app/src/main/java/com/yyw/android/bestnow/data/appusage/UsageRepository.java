@@ -1,5 +1,6 @@
 package com.yyw.android.bestnow.data.appusage;
 
+import android.graphics.drawable.Drawable;
 import android.util.ArrayMap;
 
 import com.yyw.android.bestnow.data.dao.AppUsage;
@@ -133,7 +134,19 @@ public class UsageRepository {
             appUsage=convert(entry.getValue());
             result.put(entry.getKey(),appUsage);
         }
+        addLabelAndIcon(result);
         return result;
+    }
+
+    private void addLabelAndIcon(Map<String,AppUsage> appUsages){
+        Drawable icon=null;
+        String label=null;
+        for (Map.Entry<String,AppUsage> entry:appUsages.entrySet()){
+            icon=AppInfoProvider.getInstance().getAppIcon(entry.getKey());
+            label=AppInfoProvider.getInstance().getAppLabel(entry.getKey());
+            entry.getValue().setAppIcon(icon);
+            entry.getValue().setLabel(label);
+        }
     }
 
     private Map<String,List<PerHourUsage>> getPerHourUsageIn(Date start,Date end){
@@ -183,6 +196,23 @@ public class UsageRepository {
         return appUsage;
     }
 
+    public Observable<List<PerHourUsage>> getAppDailyPerHourUsagesObservable(String packageName,Date date){
+        return Observable.just(getAppDailyPerHourUsages(packageName,date))
+                .subscribeOn(Schedulers.io());
+    }
+
+    private List<PerHourUsage> getAppDailyPerHourUsages(String packageName,Date date){
+        long startTime=Utils.getDateStart(date);
+        long endTime=Utils.getDateEnd(date);
+
+        List<PerHourUsage> perHourUsages=perHourUsageDao.queryBuilder()
+                .where(PerHourUsageDao.Properties.Time.between(startTime,endTime))
+                .where(PerHourUsageDao.Properties.PackageName.eq(packageName))
+                .orderAsc(PerHourUsageDao.Properties.Time)
+                .list();
+
+        return perHourUsages;
+    }
 
 
 }

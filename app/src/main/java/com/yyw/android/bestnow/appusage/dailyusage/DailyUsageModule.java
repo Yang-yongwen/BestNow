@@ -1,4 +1,4 @@
-package com.yyw.android.bestnow.appusage;
+package com.yyw.android.bestnow.appusage.dailyusage;
 
 import com.yyw.android.bestnow.archframework.FragmentScoped;
 import com.yyw.android.bestnow.data.appusage.UsageRepository;
@@ -11,23 +11,23 @@ import dagger.Provides;
  */
 
 @Module
-public class UsageModule {
+public class DailyUsageModule {
 
-    private AppUsageContract.View view;
+    private DailyUsageContract.View view;
 
-    public UsageModule(AppUsageContract.View view){
+    public DailyUsageModule(DailyUsageContract.View view){
         this.view=view;
     }
 
     @Provides
     @FragmentScoped
-    AppUsageContract.View providesAppUsageContractView(){
+    DailyUsageContract.View providesAppUsageContractView(){
         return view;
     }
 
     @Provides
     @FragmentScoped
-    AppUsageContract.Model providesAppUsageContractModel(UsageRepository repository){
+    DailyUsageContract.Model providesAppUsageContractModel(UsageRepository repository){
         return new AppUsageModel(repository);
     }
 
