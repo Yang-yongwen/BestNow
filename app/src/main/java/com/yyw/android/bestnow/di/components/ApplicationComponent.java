@@ -6,9 +6,11 @@ import com.yyw.android.bestnow.appusage.dailyusage.DailyUsageModule;
 import com.yyw.android.bestnow.appusage.singleappusage.AppDailyUsageComponent;
 import com.yyw.android.bestnow.appusage.singleappusage.SingleAppUsageModule;
 import com.yyw.android.bestnow.data.appusage.AppUsageAgent;
+import com.yyw.android.bestnow.data.appusage.AppUsageManager;
 import com.yyw.android.bestnow.di.modules.AppUsageModule;
 import com.yyw.android.bestnow.di.modules.ApplicationModule;
 import com.yyw.android.bestnow.di.modules.DaoDbModule;
+import com.yyw.android.bestnow.executor.JobExecutor;
 import com.yyw.android.bestnow.userinfo.UserInfoComponent;
 import com.yyw.android.bestnow.userinfo.UserInfoModule;
 
@@ -34,5 +36,9 @@ public interface ApplicationComponent {
     UserInfoComponent plus(UserInfoModule module);
 
     AppUsageAgent provideAppUsage();
+
+    AppUsageManager provideAppUsageManager();
+
+    JobExecutor provideJobExecutor();
 
 }

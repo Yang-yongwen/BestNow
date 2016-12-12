@@ -41,8 +41,10 @@
             android:exported="true">
         </activity>
 
-        <service android:name=".data.appusage.UsageUpdateService"
+        <service android:name=".data.appusage.JobScheduleService"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
+
+        <service android:name=".data.appusage.UpdateService"/>
 
     </application>
 

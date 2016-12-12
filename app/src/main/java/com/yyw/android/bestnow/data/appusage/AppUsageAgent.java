@@ -1,10 +1,13 @@
 package com.yyw.android.bestnow.data.appusage;
 
+import android.app.NotificationManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
+import android.support.v4.app.NotificationCompat;
 
+import com.yyw.android.bestnow.R;
 import com.yyw.android.bestnow.common.utils.DateUtils;
 import com.yyw.android.bestnow.common.utils.LogUtils;
 import com.yyw.android.bestnow.common.utils.SPUtils;
@@ -12,6 +15,7 @@ import com.yyw.android.bestnow.executor.JobExecutor;
 
 import java.util.Calendar;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -25,7 +29,7 @@ public class AppUsageAgent {
     Context context;
     SPUtils spUtils;
     JobExecutor jobExecutor;
-    private AppUsageManager appUsageManager;
+    AppUsageManager appUsageManager;
     private boolean isUpdating = false;
 
     public AppUsageAgent(Context context, SPUtils spUtils,
@@ -43,19 +47,21 @@ public class AppUsageAgent {
     public void startUpdate() {
         isUpdating = true;
         LogUtils.d(TAG, "update, time: " + DateUtils.formatTime(System.currentTimeMillis()));
-        appUsageManager.update();
+//        appUsageManager.update();
+        UpdateService.startUpdate(context);
         setNextUpdateSchedule();
     }
 
     public void update() {
         LogUtils.d(TAG, "update, time: " + DateUtils.formatTime(System.currentTimeMillis()));
-        appUsageManager.update();
+//        appUsageManager.update();
+        UpdateService.startUpdate(context);
     }
 
     private void setNextUpdateSchedule() {
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         JobInfo.Builder builder = new JobInfo.Builder(USAGE_UPDATE_JOB_ID,
-                new ComponentName(context.getPackageName(), UsageUpdateService.class.getName()));
+                new ComponentName(context.getPackageName(), JobScheduleService.class.getName()));
         long latency = getNextUpdateTime() - System.currentTimeMillis();
         builder.setMinimumLatency(latency);
         builder.setOverrideDeadline(latency + 1000);

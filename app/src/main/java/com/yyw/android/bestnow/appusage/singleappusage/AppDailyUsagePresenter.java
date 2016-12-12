@@ -43,8 +43,8 @@ public class AppDailyUsagePresenter implements AppDailyUsageContract.Presenter {
     @Override
     public void loadUsage(String packageName, Date date) {
         Subscription subscription = model.queryAppDailyUsage(packageName, date)
-                .observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
         subscriptions.add(subscription);
     }

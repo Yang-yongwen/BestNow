@@ -9,7 +9,7 @@ import com.yyw.android.bestnow.NowApplication;
  * Created by samsung on 2016/10/31.
  */
 
-public class UsageUpdateService extends JobService {
+public class JobScheduleService extends JobService {
     AppUsageAgent appUsageAgent;
 
     @Override
@@ -18,6 +18,7 @@ public class UsageUpdateService extends JobService {
             appUsageAgent = NowApplication.getApplicationComponent().provideAppUsage();
         }
         appUsageAgent.startUpdate();
+
         return false;
     }
 

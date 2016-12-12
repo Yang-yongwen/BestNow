@@ -131,7 +131,7 @@ public class UsageRepository {
 
     public Observable<Map<String, AppUsage>> getAppUsageObservableIn(Date start, Date end) {
         return Observable.just(getAppUsagesIn(start, end))
-                .observeOn(Schedulers.io());
+                .subscribeOn(Schedulers.io());
     }
 
     private Map<String, AppUsage> getAppUsagesIn(Date start, Date end) {

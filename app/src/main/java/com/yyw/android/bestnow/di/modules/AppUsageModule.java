@@ -5,6 +5,7 @@ import android.content.Context;
 import com.yyw.android.bestnow.common.utils.SPUtils;
 import com.yyw.android.bestnow.data.appusage.AppPool;
 import com.yyw.android.bestnow.data.appusage.AppUsageAgent;
+import com.yyw.android.bestnow.data.appusage.AppUsageManager;
 import com.yyw.android.bestnow.data.appusage.UsageRepository;
 import com.yyw.android.bestnow.data.dao.AppDao;
 import com.yyw.android.bestnow.data.dao.AppUsageDao;
@@ -40,6 +41,13 @@ public class AppUsageModule {
     AppUsageAgent provideAppUsageAgent(Context context, SPUtils spUtils,
                                        JobExecutor executor, UsageRepository repository,AppPool appPool) {
         return new AppUsageAgent(context, spUtils, executor, repository,appPool);
+    }
+
+    @Provides
+    @Singleton
+    AppUsageManager provideAppUsageManager(Context context,SPUtils spUtils,
+                                           JobExecutor executor,UsageRepository repository,AppPool appPool){
+        return new AppUsageManager(context,spUtils,executor,repository,appPool);
     }
 
     @Provides
