@@ -5,21 +5,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <fragment
-        android:id="@+id/top_usage"
-        android:tag="top_usage"
-        android:name="com.yyw.android.bestnow.userinfo.fragment.TopUsageFragment"
-        android:layout_centerHorizontal="true"
+    <!--<fragment-->
+        <!--android:id="@+id/top_usage"-->
+        <!--android:tag="top_usage"-->
+        <!--android:name="com.yyw.android.bestnow.userinfo.fragment.TopUsageFragment"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="200dp"/>-->
+
+    <include
+        layout="@layout/fragment_top_usage"
         android:layout_width="match_parent"
         android:layout_height="200dp"/>
 
-    <fragment
-        android:name="com.yyw.android.bestnow.userinfo.fragment.EventListFragment"
-        android:layout_marginTop="30dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:tag="event_list"
+    <include
+        layout="@layout/fragment_event_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
+
+
+    <!--<fragment-->
+        <!--android:name="com.yyw.android.bestnow.userinfo.fragment.EventListFragment"-->
+        <!--android:layout_marginTop="30dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:tag="event_list"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"/>-->
 
 </RelativeLayout>

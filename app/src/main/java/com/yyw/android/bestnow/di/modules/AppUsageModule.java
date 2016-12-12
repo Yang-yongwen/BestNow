@@ -3,8 +3,10 @@ package com.yyw.android.bestnow.di.modules;
 import android.content.Context;
 
 import com.yyw.android.bestnow.common.utils.SPUtils;
+import com.yyw.android.bestnow.data.appusage.AppPool;
 import com.yyw.android.bestnow.data.appusage.AppUsageAgent;
 import com.yyw.android.bestnow.data.appusage.UsageRepository;
+import com.yyw.android.bestnow.data.dao.AppDao;
 import com.yyw.android.bestnow.data.dao.AppUsageDao;
 import com.yyw.android.bestnow.data.dao.PerHourUsageDao;
 import com.yyw.android.bestnow.executor.JobExecutor;
@@ -35,8 +37,15 @@ public class AppUsageModule {
 
     @Provides
     @Singleton
-    AppUsageAgent provideAppUsageAgent(Context context, SPUtils spUtils, JobExecutor executor, UsageRepository repository) {
-        return new AppUsageAgent(context, spUtils, executor, repository);
+    AppUsageAgent provideAppUsageAgent(Context context, SPUtils spUtils,
+                                       JobExecutor executor, UsageRepository repository,AppPool appPool) {
+        return new AppUsageAgent(context, spUtils, executor, repository,appPool);
+    }
+
+    @Provides
+    @Singleton
+    AppPool provideAppPool(Context context, SPUtils spUtils, AppDao appDao){
+        return new AppPool(context,spUtils,appDao);
     }
 
 }

@@ -12,16 +12,18 @@
         android:layout_height="wrap_content">
 
         <FrameLayout
+            android:id="@+id/today_info"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <fragment
-                android:tag="daily_info"
-                android:name="com.yyw.android.bestnow.userinfo.fragment.DailyInfoFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+            <!--<fragment-->
+                <!--android:tag="daily_info"-->
+                <!--android:name="com.yyw.android.bestnow.userinfo.fragment.DailyInfoFragment"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"/>-->
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/work"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <fragment

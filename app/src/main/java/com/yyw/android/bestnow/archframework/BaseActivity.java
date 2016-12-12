@@ -1,10 +1,14 @@
 package com.yyw.android.bestnow.archframework;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,6 +19,7 @@ import com.yyw.android.bestnow.R;
 import com.yyw.android.bestnow.common.utils.LogUtils;
 import com.yyw.android.bestnow.common.utils.SPUtils;
 import com.yyw.android.bestnow.data.appusage.AppUsageAgent;
+import com.yyw.android.bestnow.setting.SettingActivity;
 import com.yyw.android.bestnow.view.behavior.DragBehavior;
 
 import java.text.SimpleDateFormat;
@@ -49,7 +54,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Inject
     SPUtils spUtils;
     private static int activityCount = -1;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +100,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         });
         calendarView = ButterKnife.findById(this, R.id.compactcalendar_view);
         calendarView.setLocale(TimeZone.getDefault(), Locale.CHINA);
+        calendarView.setUseThreeLetterAbbreviation(true);
         calendarView.setShouldDrawDaysHeader(true);
         calendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
@@ -157,10 +162,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (activityCount ==-1){
+        if (activityCount == -1) {
             LogUtils.d(TAG, "enter foreground");
             appUsageAgent.update();
-            activityCount =0;
+            activityCount = 0;
         }
         activityCount++;
     }
@@ -183,7 +188,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             behavior.setState(DragBehavior.STATE_COLLAPSED);
         }
 
-        if (activityCount==0){
+        if (activityCount == 0) {
             getWindow().getDecorView().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -222,6 +227,34 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void onMonthScroll(Date firstDayOfNewMonth) {
 
+    }
+
+    protected void setUpNavigationUp(){
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+        getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id==R.id.action_setting){
+            Intent intent=new Intent(this, SettingActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     protected int actionBarType() {

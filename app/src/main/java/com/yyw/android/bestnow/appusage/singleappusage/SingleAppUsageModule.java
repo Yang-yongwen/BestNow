@@ -10,23 +10,22 @@ import dagger.Provides;
  * Created by yangyongwen on 16/12/3.
  */
 @Module
-
 public class SingleAppUsageModule {
     private AppDailyUsageContract.View view;
-    public SingleAppUsageModule(AppDailyUsageContract.View view){
-        this.view=view;
+
+    public SingleAppUsageModule(AppDailyUsageContract.View view) {
+        this.view = view;
     }
 
     @Provides
     @FragmentScoped
-    AppDailyUsageContract.View providesAppDailyUsageContractView(){
+    AppDailyUsageContract.View providesAppDailyUsageContractView() {
         return view;
     }
 
     @Provides
     @FragmentScoped
-    AppDailyUsageContract.Model providesAppDailyUsageContractModel(UsageRepository usageRepository){
+    AppDailyUsageContract.Model providesAppDailyUsageContractModel(UsageRepository usageRepository) {
         return new AppDailyUsageModel(usageRepository);
     }
-
 }

@@ -24,15 +24,7 @@ public class AppDailyUsageActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowHomeEnabled(true);
-        getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        setUpNavigationUp();
     }
 
     @Override
@@ -47,7 +39,7 @@ public class AppDailyUsageActivity extends BaseActivity {
         if (fragment == null) {
             Intent intent = getIntent();
             String packageName = intent.getStringExtra(AppDailyUsageFragment.PACKAGE_NAME);
-            long date = intent.getLongExtra(AppDailyUsageFragment.DATE, 0);
+            String date = intent.getStringExtra(AppDailyUsageFragment.DATE);
             fragment = AppDailyUsageFragment.newInstance(packageName, date);
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fragment, R.id.main_content);
         }

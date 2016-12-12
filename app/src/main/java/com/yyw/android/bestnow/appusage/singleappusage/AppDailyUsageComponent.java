@@ -1,6 +1,5 @@
 package com.yyw.android.bestnow.appusage.singleappusage;
 
-import com.yyw.android.bestnow.appusage.dailyusage.DailyUsageModule;
 import com.yyw.android.bestnow.archframework.FragmentScoped;
 
 import dagger.Subcomponent;

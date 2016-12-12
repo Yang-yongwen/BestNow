@@ -1,9 +1,6 @@
 package com.yyw.android.bestnow.data.appusage;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.util.ArrayMap;
 
 import com.yyw.android.bestnow.common.utils.LogUtils;
 import com.yyw.android.bestnow.common.utils.SPUtils;
@@ -11,10 +8,7 @@ import com.yyw.android.bestnow.data.dao.AppUsage;
 import com.yyw.android.bestnow.data.dao.PerHourUsage;
 import com.yyw.android.bestnow.executor.JobExecutor;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -27,49 +21,27 @@ import javax.inject.Singleton;
 @Singleton
 public class AppUsageManager {
     private static final String TAG = LogUtils.makeLogTag(AppUsageManager.class);
-    private static final String BASE_TIME = "base_time";
-    private static final String LAST_UPDATE_TIME = "last_update_time";
     Context context;
     SPUtils spUtils;
     JobExecutor executor;
-    long baseTime;
-    long lastUpdateTime;
 
     AppUsageProvider appUsageProvider;
     UsageRepository repository;
 
-
     @Inject
-    public AppUsageManager(Context context, SPUtils spUtils, JobExecutor executor, UsageRepository repository) {
+    public AppUsageManager(Context context, SPUtils spUtils,
+                           JobExecutor executor, UsageRepository repository,AppPool appPool) {
         this.context = context;
         this.spUtils = spUtils;
         this.executor = executor;
         this.repository = repository;
-        this.baseTime = spUtils.getLongValue(BASE_TIME, System.currentTimeMillis());
-        this.lastUpdateTime = spUtils.getLongValue(LAST_UPDATE_TIME, System.currentTimeMillis());
-        appUsageProvider = new AppUsageProvider(context, repository,spUtils);
+        appUsageProvider = new AppUsageProvider(context, repository, spUtils,appPool);
     }
 
     public synchronized void update() {
-        long currentTime = System.currentTimeMillis();
-        spUtils.putLongValue(LAST_UPDATE_TIME, lastUpdateTime);
-        Map<String, AppUsage> updatedAppUsages = appUsageProvider.getAppUsageSinceLastUpdate(baseTime, lastUpdateTime, currentTime);
-        updatedAppUsages = filterSystemApp(updatedAppUsages);
+        Map<String, AppUsage> updatedAppUsages = appUsageProvider.getAppUsageSinceLastUpdate();
         updateAppUsage(updatedAppUsages);
-        updatePerHourUsage(updatedAppUsages, lastUpdateTime);
-        lastUpdateTime = currentTime;
-        spUtils.putLongValue(LAST_UPDATE_TIME, lastUpdateTime);
-    }
-
-    private Map<String, AppUsage> filterSystemApp(Map<String, AppUsage> appUsages) {
-        PackageManager packageManager = context.getPackageManager();
-        Map<String, AppUsage> result = new ArrayMap<>();
-        for (Map.Entry<String, AppUsage> entry : appUsages.entrySet()) {
-            if (!Utils.isSystemApp(packageManager, entry.getKey())) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
+        updatePerHourUsageNew(updatedAppUsages);
     }
 
     private void updateAppUsage(Map<String, AppUsage> updatedAppUsages) {
@@ -78,104 +50,44 @@ public class AppUsageManager {
         for (Map.Entry<String, AppUsage> entry : updatedAppUsages.entrySet()) {
             updatedAppUsage = entry.getValue();
             oldAppUsage = repository.getAppUsage(entry.getKey());
-            int totalLaunchCount = oldAppUsage.getTotalLaunchCount() + updatedAppUsage.getTotalLaunchCount();
-            long totalUsageTime = oldAppUsage.getTotalUsageTime() + updatedAppUsage.getTotalUsageTime();
 
-            oldAppUsage.setUpdateTime(updatedAppUsage.getUpdateTime());
-            oldAppUsage.setLastTimeUsed(updatedAppUsage.getLastTimeUsed());
-            oldAppUsage.setTotalUsageTime(totalUsageTime);
-            oldAppUsage.setTotalLaunchCount(totalLaunchCount);
-            repository.saveAppUsage(oldAppUsage);
+            if (oldAppUsage == null) {
+                repository.saveAppUsage(updatedAppUsage);
+            } else {
+                int totalLaunchCount = oldAppUsage.getTotalLaunchCount() + updatedAppUsage.getTotalLaunchCount();
+                long totalUsageTime = oldAppUsage.getTotalUsageTime() + updatedAppUsage.getTotalUsageTime();
+
+                oldAppUsage.setUpdateTime(updatedAppUsage.getUpdateTime());
+                oldAppUsage.setLastTimeUsed(updatedAppUsage.getLastTimeUsed());
+                oldAppUsage.setTotalUsageTime(totalUsageTime);
+                oldAppUsage.setTotalLaunchCount(totalLaunchCount);
+                repository.saveAppUsage(oldAppUsage);
+            }
         }
     }
 
-    // 必须保证每小时刚起始时更新一次,这样以下函数才有效
-    private void updatePerHourUsage(final Map<String, AppUsage> updatedAppUsages, long lastUpdateTime) {
-        long hourTime = getHourTime(lastUpdateTime);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String packageName;
-        List<PerHourUsage> updatedPerHourUsage = new ArrayList<>();
-        Date date = new Date();
-        for (Map.Entry<String, AppUsage> entry : updatedAppUsages.entrySet()) {
-            packageName = entry.getKey();
-            PerHourUsage perHourUsage = repository.getPerHourUsage(packageName, hourTime);
-            if (perHourUsage == null) {
-                perHourUsage = new PerHourUsage();
-                perHourUsage.setTime(hourTime);
-                date.setTime(hourTime);
-                perHourUsage.setFormatTime(format.format(date));
-                perHourUsage.setPackageName(packageName);
-                perHourUsage.setLaunchCount(updatedAppUsages.get(packageName).getTotalLaunchCount());
-                perHourUsage.setUsageTime(updatedAppUsages.get(packageName).getTotalUsageTime());
-            } else {
-                long usageTime = perHourUsage.getUsageTime() + updatedAppUsages.get(packageName).getTotalUsageTime();
-                int launchCount = perHourUsage.getLaunchCount() + updatedAppUsages.get(packageName).getTotalLaunchCount();
-                perHourUsage.setUsageTime(usageTime);
-                perHourUsage.setLaunchCount(launchCount);
+    private void updatePerHourUsageNew(final Map<String, AppUsage> updatedAppUsages) {
+        List<PerHourUsage> updatedPerHourUsages = new ArrayList<>();
+        for (Map.Entry<String, AppUsage> appUsageEntry : updatedAppUsages.entrySet()) {
+            String packageName = appUsageEntry.getKey();
+            Map<String, PerHourUsage> perHourUsageMap = appUsageEntry.getValue().getPerHourUsages();
+            for (Map.Entry<String, PerHourUsage> perHourUsageEntry : perHourUsageMap.entrySet()) {
+                PerHourUsage updatedPerHourUsage = perHourUsageEntry.getValue();
+                PerHourUsage original = repository.getPerHourUsage(packageName, updatedPerHourUsage.getDate(), updatedPerHourUsage.getHour());
+                if (original == null) {
+                    updatedPerHourUsages.add(updatedPerHourUsage);
+                } else {
+                    long usageTime = updatedPerHourUsage.getUsageTime() + original.getUsageTime();
+                    int launchCount = updatedPerHourUsage.getLaunchCount() + original.getLaunchCount();
+                    original.setUsageTime(usageTime);
+                    original.setLaunchCount(launchCount);
+                    updatedPerHourUsages.add(original);
+                }
             }
-            updatedPerHourUsage.add(perHourUsage);
         }
-        PerHourUsage[] perHourUsages = new PerHourUsage[updatedPerHourUsage.size()];
-        perHourUsages = updatedPerHourUsage.toArray(perHourUsages);
+        PerHourUsage[] perHourUsages = new PerHourUsage[updatedPerHourUsages.size()];
+        perHourUsages = updatedPerHourUsages.toArray(perHourUsages);
         repository.savePerHourUsage(perHourUsages);
-    }
-
-    private long getHourTime(long time) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(time);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTimeInMillis();
-    }
-
-
-    public void init() {
-        LogUtils.d(TAG, "init app base usage time ");
-        baseTime = System.currentTimeMillis();
-        lastUpdateTime = baseTime;
-        spUtils.putLongValue(BASE_TIME, baseTime);
-        spUtils.putLongValue(LAST_UPDATE_TIME, lastUpdateTime);
-        resetAppUsageBase();
-        Map<String, Long> baseAppUsageTimes = appUsageProvider.getBaseUsageTimes(baseTime);
-        initBaseAppUsage(baseAppUsageTimes, baseTime);
-    }
-
-    private void resetAppUsageBase() {
-        Map<String, AppUsage> appUsages = repository.getAllAppUsages();
-        for (Map.Entry<String, AppUsage> entry : appUsages.entrySet()) {
-            entry.getValue().setUsageTimeSinceBase(0L);
-        }
-    }
-
-    private synchronized void initBaseAppUsage(Map<String, Long> baseAppUsageTimes, long baseTime) {
-        Map<String, PackageInfo> userInstalledPackageInfo = Utils.getUserInstalledPackageInfo(context);
-        Map<String, AppUsage> oldAppUsages = repository.getAllAppUsages();
-        Map<String, AppUsage> newAppUsages = new ArrayMap<>();
-        PackageManager packageManager = context.getPackageManager();
-        Long baseAppUsageTime;
-        AppUsage appUsage;
-        for (Map.Entry<String, PackageInfo> entry : userInstalledPackageInfo.entrySet()) {
-            baseAppUsageTime = baseAppUsageTimes.get(entry.getKey());
-            long usageTimeSinceBase = baseAppUsageTime == null ? 0L : baseAppUsageTime;
-            if (oldAppUsages.containsKey(entry.getKey())) {
-                appUsage = oldAppUsages.get(entry.getKey());
-                appUsage.setUpdateTime(baseTime);
-                appUsage.setUsageTimeSinceBase(usageTimeSinceBase);
-            } else {
-                appUsage = new AppUsage();
-                appUsage.setPackageName(entry.getKey());
-                appUsage.setLabel(packageManager.getApplicationLabel(entry.getValue().applicationInfo).toString());
-                appUsage.setUsageTimeSinceBase(usageTimeSinceBase);
-                appUsage.setTotalLaunchCount(0);
-                appUsage.setTotalUsageTime(0L);
-                appUsage.setLastTimeUsed(-1L);
-                appUsage.setStartRecordTime(baseTime);
-                appUsage.setUpdateTime(baseTime);
-            }
-            newAppUsages.put(entry.getKey(), appUsage);
-        }
-        repository.saveAppUsages(newAppUsages);
     }
 
 }

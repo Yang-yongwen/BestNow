@@ -17,7 +17,7 @@ import rx.Observable;
 public interface DailyUsageContract {
 
     interface View extends BaseView<Presenter> {
-        void displayUsageData(Map<String,AppUsage> appUsages);
+        void displayUsageData(Map<String, AppUsage> appUsages);
 
         void showPieChart();
 
@@ -29,7 +29,7 @@ public interface DailyUsageContract {
     }
 
     interface Model extends BaseModel {
-        Observable<Map<String,AppUsage>> queryAppUsage(Date start, Date end);
+        Observable<Map<String, AppUsage>> queryAppUsage(Date start, Date end);
     }
 
 }

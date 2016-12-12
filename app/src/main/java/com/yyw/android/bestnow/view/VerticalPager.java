@@ -1,4 +1,5 @@
 package com.yyw.android.bestnow.view;
+
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Point;
@@ -12,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ScrollView;
 
 /**
  * Created by yangyongwen on 16/10/31.

@@ -10,24 +10,17 @@ public class DaoGeneratorBestNow {
         Schema schema = new Schema(1, "com.yyw.android.bestnow.data.dao");
         addAppUsage(schema);
         addPerHourUsage(schema);
+        addApp(schema);
         new DaoGenerator().generateAll(schema, "app/src/main/java");
     }
 
     private static void addAppUsage(Schema schema) {
         Entity appUsage = schema.addEntity("AppUsage");
 
-//        appUsage.addIntProperty("baseLaunchCount");
-//        appUsage.addLongProperty("baseUsageTime");
-//        appUsage.addLongProperty("baseTime");
-//        appUsage.addIntProperty("launchCountSinceBase");
         appUsage.addStringProperty("packageName").primaryKey();
         appUsage.addStringProperty("label");
-
-        appUsage.addLongProperty("UsageTimeSinceBase");
-
         appUsage.addIntProperty("totalLaunchCount");
         appUsage.addLongProperty("totalUsageTime");
-
         appUsage.addLongProperty("lastTimeUsed");
         appUsage.addLongProperty("startRecordTime");
         appUsage.addLongProperty("updateTime");
@@ -42,6 +35,14 @@ public class DaoGeneratorBestNow {
         perHourUsage.addStringProperty("formatTime");
         perHourUsage.addIntProperty("launchCount");
         perHourUsage.addLongProperty("usageTime");
+        perHourUsage.addStringProperty("date");
+        perHourUsage.addIntProperty("hour");
+    }
+
+    private static void addApp(Schema schema){
+        Entity unStatisticApp=schema.addEntity("App");
+        unStatisticApp.addStringProperty("packageName").primaryKey();
+        unStatisticApp.addStringProperty("label");
     }
 
 }

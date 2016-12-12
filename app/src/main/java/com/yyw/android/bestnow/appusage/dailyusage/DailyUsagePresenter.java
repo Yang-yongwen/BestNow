@@ -23,33 +23,33 @@ public class DailyUsagePresenter implements DailyUsageContract.Presenter {
     private CompositeSubscription subscriptions;
 
     @Inject
-    DailyUsagePresenter(DailyUsageContract.View appUsageView, DailyUsageContract.Model appUsageModel){
-        this.appUsageView=appUsageView;
-        this.appUsageModel=appUsageModel;
-        subscriptions=new CompositeSubscription();
+    DailyUsagePresenter(DailyUsageContract.View appUsageView, DailyUsageContract.Model appUsageModel) {
+        this.appUsageView = appUsageView;
+        this.appUsageModel = appUsageModel;
+        subscriptions = new CompositeSubscription();
     }
 
     @Inject
-    void setupListeners(){
+    void setupListeners() {
         appUsageView.setPresenter(this);
     }
 
     @Override
     public void start() {
-        Date date=new Date();
-        loadUsage(date,date);
+//        Date date = new Date();
+//        loadUsage(date, date);
     }
 
     @Override
     public void loadUsage(Date start, Date end) {
-        Subscription subscribe= appUsageModel
-                .queryAppUsage(start,end)
+        Subscription subscribe = appUsageModel
+                .queryAppUsage(start, end)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(appUsagesObserver);
         subscriptions.add(subscribe);
     }
 
-    private final Observer<Map<String,AppUsage>> appUsagesObserver=new Observer<Map<String, AppUsage>>() {
+    private final Observer<Map<String, AppUsage>> appUsagesObserver = new Observer<Map<String, AppUsage>>() {
         @Override
         public void onCompleted() {
 
@@ -68,7 +68,7 @@ public class DailyUsagePresenter implements DailyUsageContract.Presenter {
 
     @Override
     public void onResume() {
-        start();
+//        start();
     }
 
     @Override
@@ -80,8 +80,8 @@ public class DailyUsagePresenter implements DailyUsageContract.Presenter {
     public void onDestroy() {
         appUsageModel.cleanUp();
         subscriptions.clear();
-        appUsageModel=null;
-        appUsageView=null;
+        appUsageModel = null;
+        appUsageView = null;
     }
 
 }

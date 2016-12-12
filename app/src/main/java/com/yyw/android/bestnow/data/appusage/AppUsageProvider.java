@@ -1,158 +1,363 @@
 package com.yyw.android.bestnow.data.appusage;
 
 import android.app.usage.UsageEvents;
-import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
+import android.content.pm.PackageInfo;
 import android.util.ArrayMap;
 
+import com.yyw.android.bestnow.common.utils.DateUtils;
+import com.yyw.android.bestnow.common.utils.LogUtils;
 import com.yyw.android.bestnow.common.utils.SPUtils;
 import com.yyw.android.bestnow.data.dao.AppUsage;
+import com.yyw.android.bestnow.data.dao.PerHourUsage;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import javax.inject.Singleton;
+import javax.inject.Inject;
 
 /**
- * Created by samsung on 2016/10/28.
+ * Created by samsung on 2016/12/7.
  */
-@Singleton
+
 public class AppUsageProvider {
-    private static AppUsageProvider instance;
+    private static final String TAG = LogUtils.makeLogTag(AppUsageProvider.class);
+    private static final String LAST_EVENT_TYPE = "last_event_type";
+    private static final String LAST_EVENT_PACKAGE = "last_event_package";
+    private static final String LAST_EVENT_TIME_STAMP = "last_event_time_stamp";
+    private static final String LAST_UPDATE_TIME = "last_update_time";
+    private static final int MOVE_TO_BACKGROUND = UsageEvents.Event.MOVE_TO_BACKGROUND;
+    private static final int MOVE_TO_FOREGROUND = UsageEvents.Event.MOVE_TO_FOREGROUND;
+    private static final long HOUR_IN_MILLS = 1000 * 60 * 60;
     Context context;
     UsageRepository repository;
-    AppUsageProviderNew newProvider;
+    Map<String, PackageInfo> userInstallApp;
+    int lastEventType;
+    String lastEventPackage;
+    long lastEventTimeStamp;
+    SPUtils spUtils;
+    long lastUpdateTime;
+    AppPool appPool;
 
-//    public static AppUsageProvider getInstance(Context context, UsageRepository repository) {
-//        if (instance == null) {
-//            synchronized (AppUsageProvider.class) {
-//                if (instance == null) {
-//                    instance = new AppUsageProvider(context, repository);
-//                }
-//            }
-//        }
-//        return instance;
-//    }
 
-    public AppUsageProvider(Context context, UsageRepository repository, SPUtils spUtils) {
+    AppUsageProvider(Context context, UsageRepository repository, SPUtils spUtils,AppPool appPool) {
         this.context = context;
         this.repository = repository;
-        newProvider=new AppUsageProviderNew(context,repository,spUtils);
+        this.spUtils = spUtils;
+        this.appPool=appPool;
+        userInstallApp = Utils.getUserInstalledPackageInfo(context);
+        lastEventType = spUtils.getIntValue(LAST_EVENT_TYPE, -1);
+        lastEventPackage = spUtils.getStringValue(LAST_EVENT_PACKAGE, "");
+        long currentTime = System.currentTimeMillis();
+        lastEventTimeStamp = spUtils.getLongValue(LAST_EVENT_TIME_STAMP, currentTime);
+        lastUpdateTime = spUtils.getLongValue(LAST_UPDATE_TIME, currentTime);
     }
 
-    public Map<String, Long> getBaseUsageTimes(long baseTime) {
-        Map<String, UsageStats> usageStatsMap = getUsageStatsSinceBaseTime(baseTime - Utils.HOUR_IN_MILLS, baseTime);
-        Map<String, Long> baseUsageTimes = new ArrayMap<>();
-        for (Map.Entry<String, UsageStats> entry : usageStatsMap.entrySet()) {
-            baseUsageTimes.put(entry.getKey(), usageStatsMap.get(entry.getKey()).getTotalTimeInForeground());
+    public Map<String, AppUsage> getAppUsageSinceLastUpdate() {
+        return computeUsage(lastUpdateTime, System.currentTimeMillis());
+    }
+
+    public Map<String, AppUsage> getAppUsageBetween() {
+        return computeUsage(lastUpdateTime, System.currentTimeMillis());
+    }
+
+    private boolean isInAppPool(String packageName) {
+        return userInstallApp.containsKey(packageName);
+    }
+
+    private static final class MyEvent {
+        int eventType = -1;
+        long timeStamp;
+        String packageName;
+        String className;
+
+        public MyEvent() {
+
         }
-        return baseUsageTimes;
+
+        public MyEvent(UsageEvents.Event event) {
+            timeStamp = event.getTimeStamp();
+            eventType = event.getEventType();
+            packageName = event.getPackageName();
+            className = event.getClassName();
+        }
+
+        public void reset() {
+            eventType = -1;
+            packageName = null;
+            className = null;
+        }
+
+        public boolean isBackground() {
+            return eventType == UsageEvents.Event.MOVE_TO_BACKGROUND;
+        }
+
+        public boolean isForeground() {
+            return eventType == UsageEvents.Event.MOVE_TO_FOREGROUND;
+        }
+
     }
 
-    //获得从上次更新到当前时间,所有使用过的 app 的前台时间以及启动次数
-    public Map<String, AppUsage> getAppUsageSinceLastUpdate(long baseTime, long lastUpdateTime, long currentTime) {
+    private static final class UsageSlice {
+        String packageName;
+        long usageTime;
+        long startTime;
+        long endTime;
 
-        return newProvider.getAppUsageBetween(lastUpdateTime,currentTime);
-
-//        Map<String, UsageStats> usageStatsMap = getUsageStatsSinceBaseTime(baseTime, currentTime);
-//        Map<String, Long> usageTimes = computeUsageTimeSinceLastUpdate(usageStatsMap);
-//        Map<String, Integer> launchCounts = getLaunchCountsSinceLastUpdate(lastUpdateTime, currentTime);
-//
-//        Map<String, AppUsage> appUsageSinceLastUpdate = new ArrayMap<>();
-//        AppUsage appUsage;
-//        for (Map.Entry<String, Integer> entry : launchCounts.entrySet()) {
-//            appUsage = new AppUsage();
-//            appUsage.setPackageName(entry.getKey());
-//            appUsage.setTotalLaunchCount(entry.getValue());
-//            appUsage.setTotalUsageTime(usageTimes.get(entry.getKey()));
-//            appUsage.setUpdateTime(currentTime);
-//            appUsage.setLastTimeUsed(usageStatsMap.get(entry.getKey()).getLastTimeUsed());
-//            appUsageSinceLastUpdate.put(entry.getKey(), appUsage);
-//        }
-//        return appUsageSinceLastUpdate;
-    }
-
-    private Map<String, UsageStats> getUsageStatsSinceBaseTime(long baseTime, long currentTime) {
-        UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
-        return usageStatsManager.queryAndAggregateUsageStats(baseTime, currentTime);
-    }
-
-    private Map<String, Long> computeUsageTimeSinceLastUpdate(Map<String, UsageStats> usageStatsMap) {
-        Map<String, Long> usageTimeSinceLastUpdate = new ArrayMap<>();
-        long oldUsageTimeSinceBase;
-        AppUsage appUsage;
-        for (Map.Entry<String, UsageStats> entry : usageStatsMap.entrySet()) {
-            appUsage = repository.getAppUsage(entry.getKey());
-            oldUsageTimeSinceBase = 0;
-            if (appUsage != null) {
-                oldUsageTimeSinceBase = appUsage.getUsageTimeSinceBase();
-                appUsage.setUsageTimeSinceBase(entry.getValue().getTotalTimeInForeground());
+        UsageSlice combine(UsageSlice right) {
+            if (right.packageName == null || !right.packageName.equals(packageName)) {
+                throw new IllegalArgumentException("package name must be same");
             }
-            usageTimeSinceLastUpdate.put(entry.getKey(), entry.getValue().getTotalTimeInForeground() - oldUsageTimeSinceBase);
-            repository.saveAppUsage(appUsage);
+            usageTime += right.usageTime;
+            startTime = Math.min(right.startTime, startTime);
+            endTime = Math.max(right.endTime, endTime);
+            return this;
         }
-        return usageTimeSinceLastUpdate;
+
+        AppUsage toAppUsage() {
+            AppUsage appUsage = new AppUsage();
+            appUsage.setPackageName(packageName);
+            appUsage.setTotalUsageTime(usageTime);
+            appUsage.setStartRecordTime(startTime);
+            appUsage.setLastTimeUsed(endTime);
+            appUsage.setUpdateTime(endTime);
+            appUsage.setTotalLaunchCount(1);
+            appUsage.setLabel(AppInfoProvider.getInstance().getAppLabel(packageName));
+            appUsage.setPerHourUsages(computePerHourUsages());
+            return appUsage;
+        }
+
+        private Map<String, PerHourUsage> computePerHourUsages() {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(startTime);
+            long timePoint = startTime;
+            long usageTime;
+
+            calendar.set(Calendar.MILLISECOND, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            long hourTime = calendar.getTimeInMillis();
+            hourTime += HOUR_IN_MILLS;
+
+            PerHourUsage perHourUsage;
+            Map<String, PerHourUsage> perHourUsageMap = new ArrayMap<>();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH");
+            String startHour = simpleDateFormat.format(startTime);
+            String date;
+            String hour;
+            String dateAndHour;
+            while (hourTime < endTime) {
+                usageTime = hourTime - timePoint;
+
+                dateAndHour = simpleDateFormat.format(timePoint);
+                date = dateAndHour.substring(0, 10);
+                hour = dateAndHour.substring(11, 13);
+
+                perHourUsage = new PerHourUsage();
+                perHourUsage.setTime(timePoint);
+                perHourUsage.setUsageTime(usageTime);
+                perHourUsage.setPackageName(packageName);
+                perHourUsage.setDate(date);
+                perHourUsage.setHour(Integer.parseInt(hour));
+                perHourUsageMap.put(dateAndHour, perHourUsage);
+
+                timePoint = hourTime;
+                hourTime += HOUR_IN_MILLS;
+            }
+
+            perHourUsage = new PerHourUsage();
+            perHourUsage.setUsageTime(endTime - Math.max(hourTime - HOUR_IN_MILLS, startTime));
+            perHourUsage.setTime(endTime);
+            perHourUsage.setPackageName(packageName);
+            dateAndHour = simpleDateFormat.format(endTime);
+            date = dateAndHour.substring(0, 10);
+            hour = dateAndHour.substring(11, 13);
+            perHourUsage.setDate(date);
+            perHourUsage.setHour(Integer.parseInt(hour));
+            perHourUsageMap.put(dateAndHour, perHourUsage);
+
+            for (Map.Entry<String, PerHourUsage> entry : perHourUsageMap.entrySet()) {
+                entry.getValue().setLaunchCount(0);
+            }
+            perHourUsageMap.get(startHour).setLaunchCount(1);
+
+            return perHourUsageMap;
+        }
     }
 
+    private Map<String, AppUsage> computeUsage(long startTime, long endTime) {
+        List<UsageSlice> usageSlices = new ArrayList<>();
 
-//    public  class LaunchCountProvider {
-//        LaunchCountProvider() {
-//
-//        }
-////
-////        Map<String, Integer> getLaunchCountsSinceLastUpdate(long lastUpdateTime,long currentTime) {
-////            Map<String, Integer> updatedLaunchCounts = getLaunchCountsSinceLastUpdate(lastUpdateTime, currentTime);
-////            int originalLaunchCount;
-////            int launchCount;
-////            for (Map.Entry<String, Integer> entry : updatedLaunchCounts.entrySet()) {  // 加上上次更新前的启动次数,所得的启动次数就是安装以来的所有启动次数
-////                originalLaunchCount=repository.getAppUsage(entry.getKey()).getLaunchCount();
-////                launchCount=entry.getValue();
-////                entry.setValue(launchCount+originalLaunchCount);
-////            }
-////            return updatedLaunchCounts;
-////        }
-//
-//        //获取上次更新到目前的启动次数
-//        public Map<String, Integer> getLaunchCountsSinceLastUpdate(long start, long end) {
-//            Map<String, Integer> counts = new ArrayMap<>();
-//            UsageStatsManager manager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
-//            UsageEvents events = manager.queryEvents(start, end);
-//
-//            UsageEvents.Event event = new UsageEvents.Event();
-//            String lastPackageName = null;
-//            while (events.getNextEvent(event)) {
-//                if (event.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND
-//                        && !event.getPackageName().equals(lastPackageName)) {
-//                    if (counts.containsKey(event.getPackageName())) {
-//                        counts.put(event.getPackageName(), counts.get(event.getPackageName()) + 1);
-//                    } else {
-//                        counts.put(event.getPackageName(), 1);
-//                    }
-//                }
-//                lastPackageName = event.getPackageName();
-//            }
-//            return counts;
-//        }
-//    }
+        MyEvent foregroundEvent = new MyEvent();
+        MyEvent backgroundEvent = new MyEvent();
 
-    private Map<String, Integer> getLaunchCountsSinceLastUpdate(long start, long end) {
-        Map<String, Integer> counts = new ArrayMap<>();
+        logDivider();
+
+        LogUtils.d(TAG, "start time: " + DateUtils.formatTime(startTime));
+
+        LogUtils.d(TAG, "last event package: " + AppInfoProvider.getInstance().getAppLabel(lastEventPackage));
+
+        LogUtils.d(TAG, "last event type: " + lastEventType);
+
         UsageStatsManager manager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
-        UsageEvents events = manager.queryEvents(start, end);
-
+        UsageEvents events = manager.queryEvents(startTime, endTime);
         UsageEvents.Event event = new UsageEvents.Event();
-        String lastPackageName = null;
+
+        logDivider();
+
         while (events.getNextEvent(event)) {
-            if (event.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND
-                    && !event.getPackageName().equals(lastPackageName)) {
-                if (counts.containsKey(event.getPackageName())) {
-                    counts.put(event.getPackageName(), counts.get(event.getPackageName()) + 1);
+            if (event.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                foregroundEvent = new MyEvent(event);
+            } else if (event.getEventType() == UsageEvents.Event.MOVE_TO_BACKGROUND) {
+                backgroundEvent = new MyEvent(event);
+                lastUpdateTime = event.getTimeStamp();
+            }
+
+            if (foregroundEvent.packageName != null
+                    && backgroundEvent.packageName != null) {
+                if (isEventOfSameUsageSlice(foregroundEvent, backgroundEvent)) {
+                    UsageSlice slice = genUsageSlice(foregroundEvent, backgroundEvent);
+                    usageSlices.add(slice);
+                    foregroundEvent.reset();
+                    backgroundEvent.reset();
                 } else {
-                    counts.put(event.getPackageName(), 1);
+                    if (foregroundEvent.timeStamp < backgroundEvent.timeStamp) {
+                        foregroundEvent.reset();
+                    } else {
+                        backgroundEvent.reset();
+                    }
                 }
             }
-            lastPackageName = event.getPackageName();
+            LogUtils.d(TAG, AppInfoProvider.getInstance().getAppLabel(event.getPackageName()) + " -- event type: " + event.getEventType() + " time:" + DateUtils.formatTime(event.getTimeStamp()));
         }
-        return counts;
+
+        if (event.getEventType() == UsageEvents.Event.MOVE_TO_BACKGROUND) {
+            lastUpdateTime = endTime;
+        }
+
+        logDivider();
+
+        usageSlices = combineUsageSlice(usageSlices);  // 合并相邻的 foreground 和 background
+        Map<String, AppUsage> appUsageMap = genAppUsages(usageSlices);
+
+        LogUtils.d(TAG, "end time: " + DateUtils.formatTime(endTime));
+
+        logDivider();
+
+        spUtils.putLongValue(LAST_UPDATE_TIME, lastUpdateTime);
+
+        return appUsageMap;
     }
+
+    private boolean isEventOfSameUsageSlice(MyEvent foregroundEvent, MyEvent backgroundEvent) {
+        if (foregroundEvent == null || foregroundEvent.className == null
+                || backgroundEvent == null || backgroundEvent.className == null
+                || !foregroundEvent.className.equals(backgroundEvent.className)) {
+            return false;
+        }
+
+        if (backgroundEvent.timeStamp > foregroundEvent.timeStamp
+                || foregroundEvent.timeStamp - backgroundEvent.timeStamp < 170) {
+            return true;
+        }
+        return false;
+    }
+
+    private UsageSlice genUsageSlice(MyEvent foregroundEvent, MyEvent backgroundEvent) {
+        if (foregroundEvent == null || foregroundEvent.packageName == null
+                || backgroundEvent == null || backgroundEvent.packageName == null
+                || !backgroundEvent.packageName.equals(foregroundEvent.packageName)) {
+            return null;
+        }
+        UsageSlice slice = new UsageSlice();
+        slice.packageName = backgroundEvent.packageName;
+        slice.usageTime = backgroundEvent.timeStamp - foregroundEvent.timeStamp;
+        slice.startTime = foregroundEvent.timeStamp;
+        slice.endTime = backgroundEvent.timeStamp;
+        return slice;
+    }
+
+    private List<UsageSlice> combineUsageSlice(List<UsageSlice> usageSlices) {
+        filterUsageSlice(usageSlices);
+
+        for (UsageSlice slice : usageSlices) {
+            LogUtils.d(TAG, "slice: " + AppInfoProvider.getInstance().getAppLabel(slice.packageName));
+        }
+
+        if (usageSlices == null || usageSlices.size() == 0) {
+            return usageSlices;
+        }
+        List<UsageSlice> result = new ArrayList<>();
+        UsageSlice lastSlice = usageSlices.get(0);
+        UsageSlice currentSlice;
+        for (int i = 1; i < usageSlices.size(); ++i) {
+            currentSlice = usageSlices.get(i);
+            if (lastSlice.packageName.equals(currentSlice.packageName)) {
+                lastSlice.combine(currentSlice);
+            } else {
+                result.add(lastSlice);
+                lastSlice = currentSlice;
+            }
+        }
+        result.add(lastSlice);
+
+        logDivider();
+
+        for (UsageSlice slice : result) {
+            LogUtils.d(TAG, "slice: " + AppInfoProvider.getInstance().getAppLabel(slice.packageName));
+        }
+
+        return result;
+    }
+
+    private void filterUsageSlice(List<UsageSlice> usageSlices) {
+        for (Iterator<UsageSlice> iterator = usageSlices.iterator(); iterator.hasNext(); ) {
+            UsageSlice usageSlice = iterator.next();
+            if (Math.abs(usageSlice.usageTime) <= 170) {    // 某个页面的停留时间小于200ms，一般不是用户手动点击打开的。腾讯新闻会出现这种情况，明明没有手动点击却会有 移动到前台 的事件。
+                iterator.remove();
+            }
+        }
+    }
+
+    private Map<String, AppUsage> genAppUsages(List<UsageSlice> usageSlices) {
+        Map<String, AppUsage> appUsages = new ArrayMap<>();
+        if (usageSlices == null || usageSlices.size() == 0) {
+            return appUsages;
+        }
+        AppUsage appUsage;
+        AppUsage oldAppUsage;
+
+        for (int i = 0; i < usageSlices.size(); ++i) {
+            if (!isInAppPool(usageSlices.get(i).packageName)) {
+                continue;
+            }
+            appUsage = usageSlices.get(i).toAppUsage();
+            oldAppUsage = appUsages.get(appUsage.getPackageName());
+            if (oldAppUsage == null) {
+                appUsages.put(appUsage.getPackageName(), appUsage);
+            } else {
+                appUsages.put(appUsage.getPackageName(), AppUsage.combine(appUsage, oldAppUsage));
+            }
+        }
+
+        logDivider();
+
+        for (Map.Entry<String, AppUsage> entry : appUsages.entrySet()) {
+            LogUtils.d(TAG, AppInfoProvider.getInstance().getAppLabel(entry.getKey()) + "--launch count: " + entry.getValue().getTotalLaunchCount()
+                    + " usage time: " + entry.getValue().getTotalUsageTime());
+        }
+        logDivider();
+
+        return appUsages;
+    }
+
+    private void logDivider() {
+        LogUtils.d(TAG, "-------------");
+    }
+
 }

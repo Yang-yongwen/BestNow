@@ -12,6 +12,8 @@ public class PerHourUsage {
     private String formatTime;
     private Integer launchCount;
     private Long usageTime;
+    private String date;
+    private Integer hour;
 
     public PerHourUsage() {
     }
@@ -20,13 +22,15 @@ public class PerHourUsage {
         this.id = id;
     }
 
-    public PerHourUsage(Long id, String packageName, Long time, String formatTime, Integer launchCount, Long usageTime) {
+    public PerHourUsage(Long id, String packageName, Long time, String formatTime, Integer launchCount, Long usageTime, String date, Integer hour) {
         this.id = id;
         this.packageName = packageName;
         this.time = time;
         this.formatTime = formatTime;
         this.launchCount = launchCount;
         this.usageTime = usageTime;
+        this.date = date;
+        this.hour = hour;
     }
 
     public Long getId() {
@@ -75,6 +79,22 @@ public class PerHourUsage {
 
     public void setUsageTime(Long usageTime) {
         this.usageTime = usageTime;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public Integer getHour() {
+        return hour;
+    }
+
+    public void setHour(Integer hour) {
+        this.hour = hour;
     }
 
 }

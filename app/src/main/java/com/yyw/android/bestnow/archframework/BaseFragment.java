@@ -34,8 +34,8 @@ public abstract class BaseFragment extends Fragment {
         ButterKnife.bind(this, view);
     }
 
-    protected void showMessage(String msg){
-        Toast.makeText(getContext(),msg,Toast.LENGTH_SHORT).show();
+    protected void showMessage(String msg) {
+        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
 }

@@ -9,7 +9,8 @@ import com.yyw.android.bestnow.data.appusage.AppUsageAgent;
 import com.yyw.android.bestnow.di.modules.AppUsageModule;
 import com.yyw.android.bestnow.di.modules.ApplicationModule;
 import com.yyw.android.bestnow.di.modules.DaoDbModule;
-import com.yyw.android.bestnow.userinfo.activity.SplashActivity;
+import com.yyw.android.bestnow.userinfo.UserInfoComponent;
+import com.yyw.android.bestnow.userinfo.UserInfoModule;
 
 import javax.inject.Singleton;
 
@@ -22,10 +23,15 @@ import dagger.Component;
 @Singleton
 @Component(modules = {ApplicationModule.class, AppUsageModule.class, DaoDbModule.class})
 public interface ApplicationComponent {
-    void inject(SplashActivity splashActivity);
+//    void inject(UserInfoActivity splashActivity);
+
     void inject(NowApplication nowApplication);
+
     DailyUsageComponent plus(DailyUsageModule module);
+
     AppDailyUsageComponent plus(SingleAppUsageModule module);
+
+    UserInfoComponent plus(UserInfoModule module);
 
     AppUsageAgent provideAppUsage();
 

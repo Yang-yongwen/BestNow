@@ -3,7 +3,6 @@ package com.yyw.android.bestnow;
 import android.app.Application;
 
 import com.facebook.stetho.Stetho;
-import com.facebook.stetho.common.LogUtil;
 import com.yyw.android.bestnow.common.utils.LogUtils;
 import com.yyw.android.bestnow.common.utils.SPUtils;
 import com.yyw.android.bestnow.data.appusage.AppInfoProvider;
@@ -30,27 +29,16 @@ public class NowApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        instance=this;
+        instance = this;
         Stetho.initializeWithDefaults(this);
         initializeInjector();
 //        initAppUsage();
         LogUtils.init();
 //        appUsageAgent.init();
-        if (appUsageAgent.isInit()){
-            appUsageAgent.startUpdate();
-        }
+
     }
 
-    private void initAppUsage(){
-        isInit=spUtils.getBooleanValue("INIT_APP",false);
-        if (isInit=false){
-            appUsageAgent.init();
-            isInit=true;
-            spUtils.putBooleanValue("INIT_APP",isInit);
-        }
-    }
-
-    public static NowApplication getInstance(){
+    public static NowApplication getInstance() {
         return instance;
     }
 
@@ -64,12 +52,12 @@ public class NowApplication extends Application {
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
-        if (level>TRIM_MEMORY_RUNNING_CRITICAL){
+        if (level > TRIM_MEMORY_RUNNING_CRITICAL) {
             releaseUnNeedMem();
         }
     }
 
-    private void releaseUnNeedMem(){
+    private void releaseUnNeedMem() {
         AppInfoProvider.getInstance().clear();
     }
 

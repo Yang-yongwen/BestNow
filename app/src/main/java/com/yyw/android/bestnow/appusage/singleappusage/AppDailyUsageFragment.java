@@ -15,7 +15,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
@@ -27,9 +26,9 @@ import com.yyw.android.bestnow.common.utils.DateUtils;
 import com.yyw.android.bestnow.data.appusage.AppInfoProvider;
 import com.yyw.android.bestnow.data.dao.PerHourUsage;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -54,15 +53,15 @@ public class AppDailyUsageFragment extends BaseFragment implements AppDailyUsage
 
     private String packageName;
     private Date date;
+    private String dateString;
     private List<PerHourUsage> perHourUsages;
 
     private AppDailyUsageContract.Presenter presenter;
 
-    public static AppDailyUsageFragment newInstance(String packageName, long date) {
-
+    public static AppDailyUsageFragment newInstance(String packageName, String date) {
         Bundle args = new Bundle();
         args.putString(PACKAGE_NAME, packageName);
-        args.putLong(DATE, date);
+        args.putString(DATE, date);
         AppDailyUsageFragment fragment = new AppDailyUsageFragment();
         fragment.setArguments(args);
         return fragment;
@@ -78,8 +77,12 @@ public class AppDailyUsageFragment extends BaseFragment implements AppDailyUsage
     private void initArgs() {
         Bundle args = getArguments();
         packageName = args.getString(PACKAGE_NAME);
-        long time = args.getLong(DATE);
-        date = new Date(time);
+        dateString = args.getString(DATE);
+        try {
+            date=new SimpleDateFormat("yyyyMMdd").parse(dateString);
+        }catch (ParseException e){
+
+        }
     }
 
     private void initBarChart() {
@@ -132,7 +135,7 @@ public class AppDailyUsageFragment extends BaseFragment implements AppDailyUsage
 
         @Override
         public void refreshContent(Entry e, Highlight highlight) {
-            textView.setText(String.valueOf((int)e.getY()) + "分钟");
+            textView.setText(String.valueOf((int) e.getY()) + "分钟");
             super.refreshContent(e, highlight);
         }
 
@@ -195,13 +198,13 @@ public class AppDailyUsageFragment extends BaseFragment implements AppDailyUsage
         }
         int index;
         int minutes;
-        SimpleDateFormat dateFormat=new SimpleDateFormat("HH");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH");
         for (PerHourUsage perHourUsage : perHourUsages) {
-            long hourTime=perHourUsage.getTime();
-            String hour=dateFormat.format(new Date(hourTime));
-            index=Integer.parseInt(hour);
+            long hourTime = perHourUsage.getTime();
+            String hour = dateFormat.format(new Date(hourTime));
+            index = Integer.parseInt(hour);
             minutes = (int) Math.floor((double) perHourUsage.getUsageTime() / 1000.0 / 60.0);
-            minutes%=60;
+            minutes %= 60;
             entries.set(index, new BarEntry(index, minutes));
         }
         BarDataSet set;

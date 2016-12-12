@@ -15,19 +15,19 @@ public class DailyUsageModule {
 
     private DailyUsageContract.View view;
 
-    public DailyUsageModule(DailyUsageContract.View view){
-        this.view=view;
+    public DailyUsageModule(DailyUsageContract.View view) {
+        this.view = view;
     }
 
     @Provides
     @FragmentScoped
-    DailyUsageContract.View providesAppUsageContractView(){
+    DailyUsageContract.View providesAppUsageContractView() {
         return view;
     }
 
     @Provides
     @FragmentScoped
-    DailyUsageContract.Model providesAppUsageContractModel(UsageRepository repository){
+    DailyUsageContract.Model providesAppUsageContractModel(UsageRepository repository) {
         return new AppUsageModel(repository);
     }
 

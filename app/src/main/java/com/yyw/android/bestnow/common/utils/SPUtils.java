@@ -32,31 +32,31 @@ public class SPUtils {
         editor.apply();
     }
 
-    public boolean getBooleanValue(String key,boolean defaultValue){
-        return sp.getBoolean(key,defaultValue);
+    public boolean getBooleanValue(String key, boolean defaultValue) {
+        return sp.getBoolean(key, defaultValue);
     }
 
-    public void putBooleanValue(String key,boolean value){
+    public void putBooleanValue(String key, boolean value) {
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean(key, value);
         editor.apply();
     }
 
-    public int getIntValue(String key,int defaultValue){
-        return sp.getInt(key,defaultValue);
+    public int getIntValue(String key, int defaultValue) {
+        return sp.getInt(key, defaultValue);
     }
 
-    public void putIntValue(String key,int value){
+    public void putIntValue(String key, int value) {
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt(key, value);
         editor.apply();
     }
 
-    public String getStringValue(String key,String defaultValue){
-        return sp.getString(key,defaultValue);
+    public String getStringValue(String key, String defaultValue) {
+        return sp.getString(key, defaultValue);
     }
 
-    public void putStringValue(String key,String value){
+    public void putStringValue(String key, String value) {
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, value);
         editor.apply();

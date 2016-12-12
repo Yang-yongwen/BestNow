@@ -3,6 +3,8 @@ package com.yyw.android.bestnow.di.modules;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.yyw.android.bestnow.data.dao.App;
+import com.yyw.android.bestnow.data.dao.AppDao;
 import com.yyw.android.bestnow.data.dao.AppUsageDao;
 import com.yyw.android.bestnow.data.dao.DaoMaster;
 import com.yyw.android.bestnow.data.dao.DaoSession;
@@ -47,5 +49,10 @@ public class DaoDbModule {
         return daoSession.getPerHourUsageDao();
     }
 
+    @Provides
+    @Singleton
+    AppDao providesAppDao(DaoSession daoSession){
+        return daoSession.getAppDao();
+    }
 
 }

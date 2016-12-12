@@ -10,11 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.yyw.android.bestnow.R;
+import com.yyw.android.bestnow.archframework.BaseActivity;
 import com.yyw.android.bestnow.archframework.BaseFragment;
 import com.yyw.android.bestnow.common.utils.DateUtils;
 import com.yyw.android.bestnow.data.dao.AppUsage;
-import com.yyw.android.bestnow.userinfo.DailyInfoContract;
+import com.yyw.android.bestnow.userinfo.UserInfoContract;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +27,10 @@ import butterknife.BindView;
  * Created by samsung on 2016/11/3.
  */
 
-public class DailyPagerFragment extends BaseFragment implements DailyInfoContract.View {
+public class DailyPagerFragment extends BaseFragment{
     @BindView(R.id.daily_view_pager)
     ViewPager dailyPager;
     DailyPagerAdapter adapter;
-    DailyInfoContract.Presenter presenter;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -41,21 +42,32 @@ public class DailyPagerFragment extends BaseFragment implements DailyInfoContrac
         adapter = new DailyPagerAdapter(getFragmentManager());
         dailyPager.setAdapter(adapter);
         dailyPager.setCurrentItem(adapter.getCount() - 1, false);
+        dailyPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+            @Override
+            public void onPageSelected(int position) {
+                String date=genSubTitle(position);
+                ((BaseActivity)getActivity()).setSubtitle(date);
+            }
+        });
     }
 
-    @Override
-    public void setPresenter(DailyInfoContract.Presenter presenter) {
-        this.presenter=presenter;
+    private String genSubTitle(int position) {
+        int end = adapter.getCount() - 1;
+        int offset = position - end;
+        if (offset==0){
+            return "今天";
+        }else if (offset==-1){
+            return "昨天";
+        }
+        Date today = new Date();
+        Date date = DateUtils.offsetDays(today, offset);
+        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+        return format.format(date);
     }
 
-    @Override
-    public void displayTopAppUsages(Date date, List<AppUsage> topAppUsages) {
-
-    }
-
-    @Override
-    public void displayEventList(Date date, List<String> events) {
-
+    public void changeToDate(Date date){
+        int pos=adapter.computeFragmentPos(date);
+        dailyPager.setCurrentItem(pos);
     }
 
     @Override
@@ -64,11 +76,11 @@ public class DailyPagerFragment extends BaseFragment implements DailyInfoContrac
     }
 
     public class DailyPagerAdapter extends FragmentStatePagerAdapter {
-        private Map<Integer,Fragment> fragmentMap;
+        private Map<Integer, Fragment> fragmentMap;
 
         public DailyPagerAdapter(FragmentManager fm) {
             super(fm);
-            fragmentMap=new ArrayMap<>();
+            fragmentMap = new ArrayMap<>();
         }
 
         @Override
@@ -77,29 +89,31 @@ public class DailyPagerFragment extends BaseFragment implements DailyInfoContrac
             if (position == getCount() - 1) {
                 return new TodayFragment();
             } else {
-                return new DailyInfoFragment();
+                String date=computeFragmentDate(position);
+                return DailyInfoFragment.newInstance(date);
             }
         }
 
-        private void loadFragmentInfo(int position){
-            Date date=computeFragmentDate(position);
-            presenter.loadEventList(date);
-            presenter.loadTopAppUsages(date);
+//        private void loadFragmentInfo(int position) {
+//            Date date = computeFragmentDate(position);
+//            presenter.loadEventList(String);
+//            presenter.loadTopAppUsages(date);
+//        }
+
+        private String computeFragmentDate(int position) {
+            int end = getCount() - 1;
+            int offset = position - end;
+            Date today = new Date();
+            Date date = DateUtils.offsetDays(today, offset);
+            SimpleDateFormat format=new SimpleDateFormat("yyyyMMdd");
+            return format.format(date);
         }
 
-        private Date computeFragmentDate(int position){
-            int end=getCount()-1;
-            int offset=position-end;
-            Date today=new Date();
-            Date date=DateUtils.offsetDays(today,offset);
-            return date;
-        }
-
-        private int computeFragmentPos(Date date){
-            int end=getCount()-1;
-            Date today=new Date();
-            int days= DateUtils.daysBetween(date,today);
-            int result=end-days;
+        public int computeFragmentPos(Date date) {
+            int end = getCount() - 1;
+            Date today = new Date();
+            int days = DateUtils.daysBetween(date, today);
+            int result = end - days;
             return result;
         }
 
@@ -110,8 +124,8 @@ public class DailyPagerFragment extends BaseFragment implements DailyInfoContrac
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            Fragment fragment=(Fragment)super.instantiateItem(container,position);
-            fragmentMap.put(position,fragment);
+            Fragment fragment = (Fragment) super.instantiateItem(container, position);
+            fragmentMap.put(position, fragment);
             return fragment;
         }
 
@@ -122,10 +136,9 @@ public class DailyPagerFragment extends BaseFragment implements DailyInfoContrac
         }
 
         // 当 fragment 尚未初始化或者被回收了，就会返回null
-        public Fragment getFragment(int position){
+        public Fragment getFragment(int position) {
             return fragmentMap.get(position);
         }
     }
-
 
 }

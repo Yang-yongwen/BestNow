@@ -118,9 +118,9 @@ public class DragBehavior<V extends View> extends CoordinatorLayout.Behavior<V> 
             } else {
                 initHeight = maxHeight;
             }
-            parentHeight=parent.getHeight();
+            parentHeight = parent.getHeight();
             setDependencyHeight(initHeight);
-            setChildHeight(parentHeight-minHeight);
+            setChildHeight(parentHeight - minHeight);
             child.setY(initHeight);
             child.requestLayout();
         }
@@ -221,10 +221,10 @@ public class DragBehavior<V extends View> extends CoordinatorLayout.Behavior<V> 
         dependency.getParent().requestLayout();
     }
 
-    private void setChildHeight(int height){
-        height=Math.max(height,0);
-        View child=childRef.get();
-        child.getLayoutParams().height=height;
+    private void setChildHeight(int height) {
+        height = Math.max(height, 0);
+        View child = childRef.get();
+        child.getLayoutParams().height = height;
         child.getParent().requestLayout();
     }
 

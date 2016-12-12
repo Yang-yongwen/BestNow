@@ -25,12 +25,11 @@ public class AppUsageDao extends AbstractDao<AppUsage, String> {
     public static class Properties {
         public final static Property PackageName = new Property(0, String.class, "packageName", true, "PACKAGE_NAME");
         public final static Property Label = new Property(1, String.class, "label", false, "LABEL");
-        public final static Property UsageTimeSinceBase = new Property(2, Long.class, "UsageTimeSinceBase", false, "USAGE_TIME_SINCE_BASE");
-        public final static Property TotalLaunchCount = new Property(3, Integer.class, "totalLaunchCount", false, "TOTAL_LAUNCH_COUNT");
-        public final static Property TotalUsageTime = new Property(4, Long.class, "totalUsageTime", false, "TOTAL_USAGE_TIME");
-        public final static Property LastTimeUsed = new Property(5, Long.class, "lastTimeUsed", false, "LAST_TIME_USED");
-        public final static Property StartRecordTime = new Property(6, Long.class, "startRecordTime", false, "START_RECORD_TIME");
-        public final static Property UpdateTime = new Property(7, Long.class, "updateTime", false, "UPDATE_TIME");
+        public final static Property TotalLaunchCount = new Property(2, Integer.class, "totalLaunchCount", false, "TOTAL_LAUNCH_COUNT");
+        public final static Property TotalUsageTime = new Property(3, Long.class, "totalUsageTime", false, "TOTAL_USAGE_TIME");
+        public final static Property LastTimeUsed = new Property(4, Long.class, "lastTimeUsed", false, "LAST_TIME_USED");
+        public final static Property StartRecordTime = new Property(5, Long.class, "startRecordTime", false, "START_RECORD_TIME");
+        public final static Property UpdateTime = new Property(6, Long.class, "updateTime", false, "UPDATE_TIME");
     };
 
 
@@ -48,12 +47,11 @@ public class AppUsageDao extends AbstractDao<AppUsage, String> {
         db.execSQL("CREATE TABLE " + constraint + "\"APP_USAGE\" (" + //
                 "\"PACKAGE_NAME\" TEXT PRIMARY KEY NOT NULL ," + // 0: packageName
                 "\"LABEL\" TEXT," + // 1: label
-                "\"USAGE_TIME_SINCE_BASE\" INTEGER," + // 2: UsageTimeSinceBase
-                "\"TOTAL_LAUNCH_COUNT\" INTEGER," + // 3: totalLaunchCount
-                "\"TOTAL_USAGE_TIME\" INTEGER," + // 4: totalUsageTime
-                "\"LAST_TIME_USED\" INTEGER," + // 5: lastTimeUsed
-                "\"START_RECORD_TIME\" INTEGER," + // 6: startRecordTime
-                "\"UPDATE_TIME\" INTEGER);"); // 7: updateTime
+                "\"TOTAL_LAUNCH_COUNT\" INTEGER," + // 2: totalLaunchCount
+                "\"TOTAL_USAGE_TIME\" INTEGER," + // 3: totalUsageTime
+                "\"LAST_TIME_USED\" INTEGER," + // 4: lastTimeUsed
+                "\"START_RECORD_TIME\" INTEGER," + // 5: startRecordTime
+                "\"UPDATE_TIME\" INTEGER);"); // 6: updateTime
     }
 
     /** Drops the underlying database table. */
@@ -77,34 +75,29 @@ public class AppUsageDao extends AbstractDao<AppUsage, String> {
             stmt.bindString(2, label);
         }
  
-        Long UsageTimeSinceBase = entity.getUsageTimeSinceBase();
-        if (UsageTimeSinceBase != null) {
-            stmt.bindLong(3, UsageTimeSinceBase);
-        }
- 
         Integer totalLaunchCount = entity.getTotalLaunchCount();
         if (totalLaunchCount != null) {
-            stmt.bindLong(4, totalLaunchCount);
+            stmt.bindLong(3, totalLaunchCount);
         }
  
         Long totalUsageTime = entity.getTotalUsageTime();
         if (totalUsageTime != null) {
-            stmt.bindLong(5, totalUsageTime);
+            stmt.bindLong(4, totalUsageTime);
         }
  
         Long lastTimeUsed = entity.getLastTimeUsed();
         if (lastTimeUsed != null) {
-            stmt.bindLong(6, lastTimeUsed);
+            stmt.bindLong(5, lastTimeUsed);
         }
  
         Long startRecordTime = entity.getStartRecordTime();
         if (startRecordTime != null) {
-            stmt.bindLong(7, startRecordTime);
+            stmt.bindLong(6, startRecordTime);
         }
  
         Long updateTime = entity.getUpdateTime();
         if (updateTime != null) {
-            stmt.bindLong(8, updateTime);
+            stmt.bindLong(7, updateTime);
         }
     }
 
@@ -120,12 +113,11 @@ public class AppUsageDao extends AbstractDao<AppUsage, String> {
         AppUsage entity = new AppUsage( //
             cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // packageName
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // label
-            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // UsageTimeSinceBase
-            cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3), // totalLaunchCount
-            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // totalUsageTime
-            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // lastTimeUsed
-            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6), // startRecordTime
-            cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7) // updateTime
+            cursor.isNull(offset + 2) ? null : cursor.getInt(offset + 2), // totalLaunchCount
+            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // totalUsageTime
+            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // lastTimeUsed
+            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // startRecordTime
+            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6) // updateTime
         );
         return entity;
     }
@@ -135,12 +127,11 @@ public class AppUsageDao extends AbstractDao<AppUsage, String> {
     public void readEntity(Cursor cursor, AppUsage entity, int offset) {
         entity.setPackageName(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
         entity.setLabel(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setUsageTimeSinceBase(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
-        entity.setTotalLaunchCount(cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3));
-        entity.setTotalUsageTime(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
-        entity.setLastTimeUsed(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
-        entity.setStartRecordTime(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
-        entity.setUpdateTime(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
+        entity.setTotalLaunchCount(cursor.isNull(offset + 2) ? null : cursor.getInt(offset + 2));
+        entity.setTotalUsageTime(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
+        entity.setLastTimeUsed(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
+        entity.setStartRecordTime(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
+        entity.setUpdateTime(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
      }
     
     /** @inheritdoc */

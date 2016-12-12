@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="常规"
+        android:key="pref_normal">
+
+        <Preference
+            android:key="pref_set_checkable_app"
+            android:title="设置统计使用情况的App"
+            android:summary="默认情况下将忽略手机自带的App"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

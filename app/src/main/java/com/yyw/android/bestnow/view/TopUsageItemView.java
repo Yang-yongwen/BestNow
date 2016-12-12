@@ -2,6 +2,7 @@ package com.yyw.android.bestnow.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
@@ -9,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.yyw.android.bestnow.R;
+import com.yyw.android.bestnow.data.dao.AppUsage;
 
 import java.text.NumberFormat;
 
@@ -40,11 +42,16 @@ public class TopUsageItemView extends LinearLayout {
         ButterKnife.bind(this);
     }
 
-    public void setAppIcon(Bitmap bitmap) {
-        iconIV.setImageBitmap(bitmap);
+    public void setAppUsage(AppUsage appUsage){
+        setAppIcon(appUsage.getAppIcon());
+        setUsageTime(appUsage.getTotalUsageTime());
     }
 
-    public void setUsageTime(long timeInMills) {
+    private void setAppIcon(Drawable bitmap) {
+        iconIV.setImageDrawable(bitmap);
+    }
+
+    private void setUsageTime(long timeInMills) {
         String time = convertTimeFormat(timeInMills);
         usageTimeTV.setText(time);
     }
@@ -56,10 +63,11 @@ public class TopUsageItemView extends LinearLayout {
         }
         long minute = second / 60;
         if (minute < 60) {
-            return Long.toString(minute) + "分";
+            return Long.toString(minute) + "分钟";
         }
-        double hour = minute / 60;
-        return String.format("%.1f", hour);
+        long hour=minute/60;
+        minute%=60;
+        return String.valueOf(hour)+"小时"+String.valueOf(minute)+"分钟";
     }
 
     public void setUsagePercent(double percent) {

@@ -27,10 +27,13 @@ import com.yyw.android.bestnow.archframework.BaseFragment;
 import com.yyw.android.bestnow.common.utils.DateUtils;
 import com.yyw.android.bestnow.data.dao.AppUsage;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -59,18 +62,30 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
     List<Integer> pieColors;
     List<AppUsage> appUsages;
     AppUsage selectedAppUsage;
+    Date date;
+    String dateString;
 
-    public static DailyUsageFragment newInstance() {
-        return new DailyUsageFragment();
+    public static DailyUsageFragment newInstance(String date) {
+        DailyUsageFragment fragment=new DailyUsageFragment();
+        Bundle args=new Bundle();
+        args.putString("date",date);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initRecyclerView();
-        initPieChar();
-        presenter.start();
         showListChart();
+        initPieChar();
+        dateString=getArguments().getString("date");
+        try {
+            date=new SimpleDateFormat("yyyyMMdd").parse(dateString);
+            presenter.loadUsage(date,date);
+        }catch (ParseException e){
+
+        }
     }
 
     private void initRecyclerView() {
@@ -122,8 +137,8 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
     private final OnChartValueSelectedListener chartValueSelectedListener = new OnChartValueSelectedListener() {
         @Override
         public void onValueSelected(Entry e, Highlight h) {
-            if (e.getData() instanceof AppUsage){
-                selectedAppUsage=(AppUsage) e.getData();
+            if (e.getData() instanceof AppUsage) {
+                selectedAppUsage = (AppUsage) e.getData();
                 selectedAppIconIV.setImageDrawable(selectedAppUsage.getAppIcon());
                 selectedAppLabelTV.setText(DateUtils.toDisplayFormat(selectedAppUsage.getTotalUsageTime()));
             }
@@ -200,14 +215,14 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
         float restPercent = 1.0f;
         float percent;
         for (AppUsage appUsage : appUsages) {
-            percent = (float)appUsage.getTotalUsageTime() / (float) totalUsageTime;
+            percent = (float) appUsage.getTotalUsageTime() / (float) totalUsageTime;
             restPercent -= percent;
-            if (percent>0.01f){
+            if (percent > 0.01f) {
                 entry = new PieEntry(appUsage.getTotalUsageTime(),
-                        percent > 0.02f ? appUsage.getLabel() : "",appUsage);
+                        percent > 0.02f ? appUsage.getLabel() : "", appUsage);
                 entries.add(entry);
             }
-            if (restPercent <= 0.02f&&restPercent>0.01f) {
+            if (restPercent <= 0.02f && restPercent > 0.01f) {
                 entry = new PieEntry(restPercent * totalUsageTime, "other");
                 entries.add(entry);
                 break;
@@ -234,13 +249,13 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
     }
 
     @OnClick(R.id.selected_app_icon)
-    void showSelectedAppDailyUsage(){
-        Intent intent=new Intent(getActivity(), AppDailyUsageActivity.class);
-        if (selectedAppUsage==null){
+    void showSelectedAppDailyUsage() {
+        Intent intent = new Intent(getActivity(), AppDailyUsageActivity.class);
+        if (selectedAppUsage == null) {
             return;
         }
-        intent.putExtra(AppDailyUsageFragment.PACKAGE_NAME,selectedAppUsage.getPackageName());
-        intent.putExtra(AppDailyUsageFragment.DATE,System.currentTimeMillis());
+        intent.putExtra(AppDailyUsageFragment.PACKAGE_NAME, selectedAppUsage.getPackageName());
+        intent.putExtra(AppDailyUsageFragment.DATE, dateString);
         startActivity(intent);
     }
 
@@ -249,11 +264,19 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
         this.presenter = presenter;
     }
 
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        presenter.loadUsage(date,date);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         presenter.onResume();
     }
+
 
     @Override
     public void onPause() {
@@ -265,6 +288,7 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
     public void onDestroy() {
         super.onDestroy();
         presenter.onDestroy();
+        presenter=null;
     }
 
     @Override

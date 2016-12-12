@@ -4,7 +4,6 @@ import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
-import android.util.Log;
 
 import com.yyw.android.bestnow.common.utils.DateUtils;
 import com.yyw.android.bestnow.common.utils.LogUtils;
@@ -22,55 +21,34 @@ import javax.inject.Singleton;
 @Singleton
 public class AppUsageAgent {
     private static final String TAG = LogUtils.makeLogTag(AppUsageAgent.class);
-    public static final String USAGE_INIT="usage_init";
     private static final int USAGE_UPDATE_JOB_ID = 0;
     Context context;
     SPUtils spUtils;
     JobExecutor jobExecutor;
     private AppUsageManager appUsageManager;
-    private boolean isInit;
+    private boolean isUpdating = false;
 
-    public AppUsageAgent(Context context, SPUtils spUtils, JobExecutor executor, UsageRepository repository) {
-        appUsageManager = new AppUsageManager(context, spUtils, executor, repository);
+    public AppUsageAgent(Context context, SPUtils spUtils,
+                         JobExecutor executor, UsageRepository repository,AppPool appPool) {
+        appUsageManager = new AppUsageManager(context, spUtils, executor, repository,appPool);
         this.context = context;
-        this.spUtils=spUtils;
-        this.jobExecutor=executor;
-        isInit=spUtils.getBooleanValue(USAGE_INIT,false);
+        this.spUtils = spUtils;
+        this.jobExecutor = executor;
     }
 
-    public void init() {
-        jobExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                LogUtils.d(TAG,"init!");
-                appUsageManager.init();
-                isInit=true;
-                spUtils.putBooleanValue(USAGE_INIT,isInit);
-                startUpdate();
-            }
-        });
-    }
-
-    public boolean isInit(){
-        return isInit;
+    public boolean isUpdating() {
+        return isUpdating;
     }
 
     public void startUpdate() {
-        if (!isInit){
-            LogUtils.d(TAG,"not init yet");
-            return;
-        }
-        LogUtils.d(TAG, "update, time: "+ DateUtils.formatTime(System.currentTimeMillis()));
+        isUpdating = true;
+        LogUtils.d(TAG, "update, time: " + DateUtils.formatTime(System.currentTimeMillis()));
         appUsageManager.update();
         setNextUpdateSchedule();
     }
 
-    public void update(){
-        if (!isInit){
-            LogUtils.d(TAG,"not init yet");
-            return;
-        }
-        LogUtils.d(TAG, "update, time: "+ DateUtils.formatTime(System.currentTimeMillis()));
+    public void update() {
+        LogUtils.d(TAG, "update, time: " + DateUtils.formatTime(System.currentTimeMillis()));
         appUsageManager.update();
     }
 
@@ -95,8 +73,8 @@ public class AppUsageAgent {
 //        calendar.set(Calendar.SECOND, 10);
 //        calendar.add(Calendar.HOUR, 1);
 //        calendar.add(Calendar.SECOND,5);
-        long time=calendar.getTimeInMillis();
-        LogUtils.d(TAG,"next update time is: "+DateUtils.formatTime(time));
+        long time = calendar.getTimeInMillis();
+        LogUtils.d(TAG, "next update time is: " + DateUtils.formatTime(time));
         return time;
     }
 

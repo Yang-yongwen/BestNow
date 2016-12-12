@@ -92,7 +92,7 @@ public class LogUtils {
         }
     };
 
-     String  buildFileLogMessage(String type, String message) {
+    String buildFileLogMessage(String type, String message) {
         date.setTime(System.currentTimeMillis());
         StringBuilder builder = new StringBuilder();
         builder.append("[").append(type).append("] ");
@@ -187,8 +187,8 @@ public class LogUtils {
     public static void d(final String tag, String msg) {
         if (LOGGING_ENABLED) {
 //            Logger.t(tag).d(msg);
-            Log.d(tag,msg);
-            instance.nativeLogger.info(instance.buildFileLogMessage("D",msg));
+            Log.d(tag, msg);
+            instance.nativeLogger.info(instance.buildFileLogMessage("D", msg));
         }
     }
 }

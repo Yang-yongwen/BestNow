@@ -8,41 +8,71 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 
 import com.yyw.android.bestnow.NowApplication;
 import com.yyw.android.bestnow.R;
+import com.yyw.android.bestnow.appusage.dailyusage.DailyUsageActivity;
 import com.yyw.android.bestnow.archframework.BaseActivity;
 import com.yyw.android.bestnow.common.utils.LogUtils;
 import com.yyw.android.bestnow.common.utils.SPUtils;
 import com.yyw.android.bestnow.data.appusage.AppUsageAgent;
-import com.yyw.android.bestnow.data.appusage.AppUsageManager;
-import com.yyw.android.bestnow.appusage.dailyusage.DailyUsageActivity;
+import com.yyw.android.bestnow.userinfo.UserInfoContract;
+import com.yyw.android.bestnow.userinfo.UserInfoModule;
+import com.yyw.android.bestnow.userinfo.UserInfoPresenter;
+import com.yyw.android.bestnow.userinfo.fragment.DailyPagerFragment;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.inject.Inject;
 
-public class SplashActivity extends BaseActivity {
-    private static final String TAG= LogUtils.makeLogTag(SplashActivity.class);
+public class UserInfoActivity extends BaseActivity {
+    private static final String TAG = LogUtils.makeLogTag(UserInfoActivity.class);
     @Inject
     Context context;
     @Inject
     AppUsageAgent appUsageAgent;
     @Inject
     SPUtils spUtils;
+    @Inject
+    UserInfoPresenter presenter;
+    DailyPagerFragment pagerFragment;
+
     private AlertDialog usagePermissionDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("Best Now");
+        setSubtitle("今天");
+        pagerFragment=(DailyPagerFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.main_content);
     }
 
     @Override
-    protected void onDayClick(Date dateClicked) {
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+        if (fragment instanceof UserInfoContract.View){
+            UserInfoContract.View view=(UserInfoContract.View)fragment;
+            view.setPresenter(presenter);
+        }
+    }
+
+    @Override
+    protected void onDayClick(final Date dateClicked) {
         setSubtitle(dateFormat.format(dateClicked));
-        startActivity(new Intent(this,DailyUsageActivity.class));
+        Intent intent=new Intent(this,DailyUsageActivity.class);
+        intent.putExtra("date",new SimpleDateFormat("yyyyMMdd").format(dateClicked));
+        startActivity(intent);
+        getWindow().getDecorView().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                pagerFragment.changeToDate(dateClicked);
+            }
+        },200);
     }
 
     @Override
@@ -56,7 +86,7 @@ public class SplashActivity extends BaseActivity {
     }
 
     protected void setupActivityComponent() {
-        NowApplication.getApplicationComponent().inject(this);
+        NowApplication.getApplicationComponent().plus(new UserInfoModule()).inject(this);
     }
 
     @Override
@@ -72,22 +102,20 @@ public class SplashActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (!hasUsagePermission()){
-            if (usagePermissionDialog==null){
-                usagePermissionDialog=buildDialog();
+        if (!hasUsagePermission()) {
+            if (usagePermissionDialog == null) {
+                usagePermissionDialog = buildDialog();
             }
-            if (!usagePermissionDialog.isShowing()){
+            if (!usagePermissionDialog.isShowing()) {
                 usagePermissionDialog.show();
             }
-        }else {
-            if (!appUsageAgent.isInit()){
-                appUsageAgent.init();
-            }
+        } else if (!appUsageAgent.isUpdating()) {
+            appUsageAgent.startUpdate();
         }
     }
 
-    private AlertDialog buildDialog(){
-        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+    private AlertDialog buildDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.usage_permission_dialog_message)
                 .setTitle(R.string.usage_permission_dialog_title)
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -102,7 +130,7 @@ public class SplashActivity extends BaseActivity {
                         requestUsageStatsPermission();
                     }
                 });
-        AlertDialog alertDialog=builder.create();
+        AlertDialog alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
         return alertDialog;
     }

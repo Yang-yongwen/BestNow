@@ -23,24 +23,16 @@ public class DailyUsageActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowHomeEnabled(true);
-        getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        setUpNavigationUp();
     }
 
-    protected
-    void setupActivityComponent(){
-        DailyUsageFragment fragment=(DailyUsageFragment)getSupportFragmentManager()
+    protected void setupActivityComponent() {
+        DailyUsageFragment fragment = (DailyUsageFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.main_content);
-        if (fragment==null){
-            fragment= DailyUsageFragment.newInstance();
-            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(),fragment,R.id.main_content);
+        if (fragment == null) {
+            String date=getIntent().getStringExtra("date");
+            fragment = DailyUsageFragment.newInstance(date);
+            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fragment, R.id.main_content);
         }
 
         NowApplication.getApplicationComponent()
@@ -55,7 +47,7 @@ public class DailyUsageActivity extends BaseActivity {
 
     @Override
     protected int actionBarType() {
-        return ACTION_BAR_TYPE_CALENDAR;
+        return ACTION_BAR_TYPE_NORMAL;
     }
 
     @Override

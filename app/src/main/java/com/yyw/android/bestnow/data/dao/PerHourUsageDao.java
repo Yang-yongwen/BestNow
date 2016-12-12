@@ -29,6 +29,8 @@ public class PerHourUsageDao extends AbstractDao<PerHourUsage, Long> {
         public final static Property FormatTime = new Property(3, String.class, "formatTime", false, "FORMAT_TIME");
         public final static Property LaunchCount = new Property(4, Integer.class, "launchCount", false, "LAUNCH_COUNT");
         public final static Property UsageTime = new Property(5, Long.class, "usageTime", false, "USAGE_TIME");
+        public final static Property Date = new Property(6, String.class, "date", false, "DATE");
+        public final static Property Hour = new Property(7, Integer.class, "hour", false, "HOUR");
     };
 
 
@@ -49,7 +51,9 @@ public class PerHourUsageDao extends AbstractDao<PerHourUsage, Long> {
                 "\"TIME\" INTEGER," + // 2: time
                 "\"FORMAT_TIME\" TEXT," + // 3: formatTime
                 "\"LAUNCH_COUNT\" INTEGER," + // 4: launchCount
-                "\"USAGE_TIME\" INTEGER);"); // 5: usageTime
+                "\"USAGE_TIME\" INTEGER," + // 5: usageTime
+                "\"DATE\" TEXT," + // 6: date
+                "\"HOUR\" INTEGER);"); // 7: hour
     }
 
     /** Drops the underlying database table. */
@@ -92,6 +96,16 @@ public class PerHourUsageDao extends AbstractDao<PerHourUsage, Long> {
         if (usageTime != null) {
             stmt.bindLong(6, usageTime);
         }
+ 
+        String date = entity.getDate();
+        if (date != null) {
+            stmt.bindString(7, date);
+        }
+ 
+        Integer hour = entity.getHour();
+        if (hour != null) {
+            stmt.bindLong(8, hour);
+        }
     }
 
     /** @inheritdoc */
@@ -109,7 +123,9 @@ public class PerHourUsageDao extends AbstractDao<PerHourUsage, Long> {
             cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // time
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // formatTime
             cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4), // launchCount
-            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5) // usageTime
+            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // usageTime
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // date
+            cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7) // hour
         );
         return entity;
     }
@@ -123,6 +139,8 @@ public class PerHourUsageDao extends AbstractDao<PerHourUsage, Long> {
         entity.setFormatTime(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setLaunchCount(cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4));
         entity.setUsageTime(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
+        entity.setDate(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setHour(cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7));
      }
     
     /** @inheritdoc */

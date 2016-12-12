@@ -9,18 +9,12 @@ import android.widget.TextView;
 
 import com.yyw.android.bestnow.R;
 import com.yyw.android.bestnow.common.utils.DateUtils;
-import com.yyw.android.bestnow.data.appusage.UsageRepository;
 import com.yyw.android.bestnow.data.dao.AppUsage;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Observable;
 
 /**
  * Created by yangyongwen on 16/11/27.
@@ -44,6 +38,7 @@ public class DailyUsageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         TextView appLabelTV;
         @BindView(R.id.app_icon)
         ImageView appIconIV;
+
         AppUsageViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
@@ -62,7 +57,7 @@ public class DailyUsageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         AppUsage appUsage = appUsages.get(position);
         AppUsageViewHolder vh = (AppUsageViewHolder) holder;
         vh.usageTimeTV.setText(DateUtils.toDisplayFormat(appUsage.getTotalUsageTime()));
-        vh.launchCountTV.setText(String.valueOf(appUsage.getTotalLaunchCount())+"次");
+        vh.launchCountTV.setText(String.valueOf(appUsage.getTotalLaunchCount()) + "次");
         vh.appLabelTV.setText(appUsage.getLabel());
         vh.appIconIV.setImageDrawable(appUsage.getAppIcon());
     }

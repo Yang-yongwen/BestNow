@@ -1,4 +1,5 @@
 package com.yyw.android.bestnow.view;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -9,7 +10,6 @@ import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-
 
 import com.yyw.android.bestnow.R;
 
@@ -121,17 +121,17 @@ public class CirclePicker extends View {
         canvas.drawCircle(pickerPosition.x - width / 2, pickerPosition.y - height / 2, pickerRadius, pointPaint);
     }
 
-    private void initSize(){
-        height=getHeight();
-        width=getWidth();
-        circleRadius=Math.min(circleRadius,height);
-        circleRadius=Math.min(circleRadius,width);
-        int size=Math.min(height,width)/2;
-        circleRadius=size-pickerRadius;
-        if (!isPickerPositionInit){
-            isPickerPositionInit=true;
-            pickerPosition.x=width/2;
-            pickerPosition.y=height/2-(int)circleRadius;
+    private void initSize() {
+        height = getHeight();
+        width = getWidth();
+        circleRadius = Math.min(circleRadius, height);
+        circleRadius = Math.min(circleRadius, width);
+        int size = Math.min(height, width) / 2;
+        circleRadius = size - pickerRadius;
+        if (!isPickerPositionInit) {
+            isPickerPositionInit = true;
+            pickerPosition.x = width / 2;
+            pickerPosition.y = height / 2 - (int) circleRadius;
         }
     }
 

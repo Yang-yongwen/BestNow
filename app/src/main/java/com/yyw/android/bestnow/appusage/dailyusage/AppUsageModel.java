@@ -19,17 +19,17 @@ public class AppUsageModel implements DailyUsageContract.Model {
     private UsageRepository usageRepository;
 
     @Inject
-    AppUsageModel(UsageRepository repository){
-        usageRepository=repository;
+    AppUsageModel(UsageRepository repository) {
+        usageRepository = repository;
     }
 
     @Override
-    public Observable<Map<String,AppUsage>> queryAppUsage(Date start, Date end) {
-        return usageRepository.getAppUsageObservableIn(start,end);
+    public Observable<Map<String, AppUsage>> queryAppUsage(Date start, Date end) {
+        return usageRepository.getAppUsageObservableIn(start, end);
     }
 
     @Override
     public void cleanUp() {
-        usageRepository=null;
+        usageRepository = null;
     }
 }
