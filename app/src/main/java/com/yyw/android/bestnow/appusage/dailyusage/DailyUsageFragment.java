@@ -56,6 +56,8 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
     ImageView selectedAppIconIV;
     @BindView(R.id.selected_app_usage_time)
     TextView selectedAppLabelTV;
+    @BindView(R.id.usage_chart_stub)
+    View chartStubView;
 
     DailyUsageAdapter dailyUsageAdapter;
     PieData pieData;
@@ -66,9 +68,9 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
     String dateString;
 
     public static DailyUsageFragment newInstance(String date) {
-        DailyUsageFragment fragment=new DailyUsageFragment();
-        Bundle args=new Bundle();
-        args.putString("date",date);
+        DailyUsageFragment fragment = new DailyUsageFragment();
+        Bundle args = new Bundle();
+        args.putString("date", date);
         fragment.setArguments(args);
         return fragment;
     }
@@ -79,11 +81,11 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
         initRecyclerView();
         showListChart();
         initPieChar();
-        dateString=getArguments().getString("date");
+        dateString = getArguments().getString("date");
         try {
-            date=new SimpleDateFormat("yyyyMMdd").parse(dateString);
-            presenter.loadUsage(date,date);
-        }catch (ParseException e){
+            date = new SimpleDateFormat("yyyyMMdd").parse(dateString);
+            presenter.loadUsage(date, date);
+        } catch (ParseException e) {
 
         }
     }
@@ -179,8 +181,18 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
 
     @Override
     public void displayUsageData(Map<String, AppUsage> appUsageMap) {
+        if (appUsageMap == null || appUsageMap.size() == 0) {
+            chartStubView.setVisibility(View.VISIBLE);
+            pieChartContainer.setVisibility(View.INVISIBLE);
+            recyclerView.setVisibility(View.INVISIBLE);
+        }
+        chartStubView.setVisibility(View.GONE);
+        if (!pieChartContainer.isShown() && !recyclerView.isShown()) {
+            showListChart();
+        }
         appUsages = toSortedList(appUsageMap.values());
         dailyUsageAdapter.setAppUsages(appUsages);
+        dailyUsageAdapter.setDate(dateString);
         setPieData(appUsages);
     }
 
@@ -268,7 +280,7 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
     @Override
     public void onStart() {
         super.onStart();
-        presenter.loadUsage(date,date);
+        presenter.loadUsage(date, date);
     }
 
     @Override
@@ -288,7 +300,7 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
     public void onDestroy() {
         super.onDestroy();
         presenter.onDestroy();
-        presenter=null;
+        presenter = null;
     }
 
     @Override

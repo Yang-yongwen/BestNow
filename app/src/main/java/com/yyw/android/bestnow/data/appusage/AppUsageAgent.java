@@ -1,13 +1,10 @@
 package com.yyw.android.bestnow.data.appusage;
 
-import android.app.NotificationManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
-import android.support.v4.app.NotificationCompat;
 
-import com.yyw.android.bestnow.R;
 import com.yyw.android.bestnow.common.utils.DateUtils;
 import com.yyw.android.bestnow.common.utils.LogUtils;
 import com.yyw.android.bestnow.common.utils.SPUtils;
@@ -15,7 +12,6 @@ import com.yyw.android.bestnow.executor.JobExecutor;
 
 import java.util.Calendar;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -33,8 +29,8 @@ public class AppUsageAgent {
     private boolean isUpdating = false;
 
     public AppUsageAgent(Context context, SPUtils spUtils,
-                         JobExecutor executor, UsageRepository repository,AppPool appPool) {
-        appUsageManager = new AppUsageManager(context, spUtils, executor, repository,appPool);
+                         JobExecutor executor, AppUsageManager appUsageManager) {
+        this.appUsageManager = appUsageManager;
         this.context = context;
         this.spUtils = spUtils;
         this.jobExecutor = executor;
@@ -75,10 +71,10 @@ public class AppUsageAgent {
 
     private long getNextUpdateTime() {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, 1);
+//        calendar.add(Calendar.MINUTE, 1);
 //        calendar.set(Calendar.SECOND, 10);
 //        calendar.add(Calendar.HOUR, 1);
-//        calendar.add(Calendar.SECOND,5);
+        calendar.add(Calendar.SECOND, 20);
         long time = calendar.getTimeInMillis();
         LogUtils.d(TAG, "next update time is: " + DateUtils.formatTime(time));
         return time;

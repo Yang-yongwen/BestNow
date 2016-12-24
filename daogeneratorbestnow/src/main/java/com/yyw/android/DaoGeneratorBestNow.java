@@ -11,6 +11,7 @@ public class DaoGeneratorBestNow {
         addAppUsage(schema);
         addPerHourUsage(schema);
         addApp(schema);
+        addEvent(schema);
         new DaoGenerator().generateAll(schema, "app/src/main/java");
     }
 
@@ -40,9 +41,25 @@ public class DaoGeneratorBestNow {
     }
 
     private static void addApp(Schema schema){
-        Entity unStatisticApp=schema.addEntity("App");
-        unStatisticApp.addStringProperty("packageName").primaryKey();
-        unStatisticApp.addStringProperty("label");
+        Entity app=schema.addEntity("App");
+        app.addStringProperty("packageName").primaryKey();
+        app.addStringProperty("label");
+        app.addBooleanProperty("shouldStatistic");
+        app.addBooleanProperty("isLimit");
+        app.addLongProperty("limitTime");
+    }
+
+    private static void addEvent(Schema schema){
+        Entity event=schema.addEntity("Event");
+        event.addIdProperty();
+        event.addStringProperty("date");
+        event.addStringProperty("alarmTime");
+        event.addBooleanProperty("hasAlarm");
+        event.addBooleanProperty("done");
+        event.addStringProperty("content");
+        event.addBooleanProperty("edited");
+        event.addLongProperty("createTime");
+        event.setHasKeepSections(true);
     }
 
 }

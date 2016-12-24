@@ -35,13 +35,16 @@ public class UsageRepository {
     AppUsageDao appUsageDao;
     PerHourUsageDao perHourUsageDao;
     JobExecutor executor;
+    AppPool appPool;
 
     Map<String, AppUsage> appUsages;  // 缓存，与数据库内容保持一致。
 
-    public UsageRepository(AppUsageDao appUsageDao, JobExecutor executor, PerHourUsageDao perHourUsageDao) {
+    public UsageRepository(AppUsageDao appUsageDao, JobExecutor executor,
+                           PerHourUsageDao perHourUsageDao,AppPool appPool) {
         this.appUsageDao = appUsageDao;
         this.executor = executor;
         this.perHourUsageDao = perHourUsageDao;
+        this.appPool=appPool;
         appUsages = new ArrayMap<>();
     }
 
@@ -170,6 +173,7 @@ public class UsageRepository {
         List<PerHourUsage> perHourUsages = perHourUsageDao.queryBuilder()
                 .where(PerHourUsageDao.Properties.Date.in(dates))
                 .list();
+        filterUnStatisticApps(perHourUsages.iterator());
 
         Map<String, List<PerHourUsage>> result = new ArrayMap<>();
         String packageName;
@@ -272,6 +276,40 @@ public class UsageRepository {
         }
         addLabelAndIcon(result.iterator());
         return result;
+    }
+
+    public long getAppDailyUsageTime(String packageName,String date){
+        List<PerHourUsage> perHourUsages=perHourUsageDao.queryBuilder()
+                .where(PerHourUsageDao.Properties.Date.eq(date))
+                .where(PerHourUsageDao.Properties.PackageName.eq(packageName))
+                .list();
+        long totalTime=0;
+        for (PerHourUsage perHourUsage:perHourUsages){
+            totalTime+=perHourUsage.getUsageTime();
+        }
+        return totalTime;
+    }
+
+    public long[] getDailyUsageTimeAndLaunchCount(String date){
+        List<PerHourUsage> perHourUsages=perHourUsageDao.queryBuilder()
+                .where(PerHourUsageDao.Properties.Date.eq(date))
+                .list();
+        filterUnStatisticApps(perHourUsages.iterator());
+        long[] longs=new long[2];
+        for (PerHourUsage perHourUsage:perHourUsages){
+            longs[1]+=perHourUsage.getUsageTime();
+            longs[0]+=perHourUsage.getLaunchCount();
+        }
+        return longs;
+    }
+
+    private void filterUnStatisticApps(Iterator<PerHourUsage> perHourUsageIterator){
+        for (;perHourUsageIterator.hasNext();){
+            PerHourUsage perHourUsage=perHourUsageIterator.next();
+            if (!appPool.shouldStatistic(perHourUsage.getPackageName())){
+                perHourUsageIterator.remove();
+            }
+        }
     }
 
 }

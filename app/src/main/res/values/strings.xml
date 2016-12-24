@@ -4,4 +4,7 @@
     <string name="cancel">cancel</string>
     <string name="usage_permission_dialog_title">获取权限</string>
     <string name="usage_permission_dialog_message">为查看应用的使用情况，需要您授予相关权限。</string>
+    <string name="event_edit_text_hint">新增清单项</string>
+    <string name="set_usage_limit_tilte">添加应用限时</string>
+    <string name="over_limited_title">应用已超时</string>
 </resources>

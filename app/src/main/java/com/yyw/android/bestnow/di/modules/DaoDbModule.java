@@ -8,6 +8,7 @@ import com.yyw.android.bestnow.data.dao.AppDao;
 import com.yyw.android.bestnow.data.dao.AppUsageDao;
 import com.yyw.android.bestnow.data.dao.DaoMaster;
 import com.yyw.android.bestnow.data.dao.DaoSession;
+import com.yyw.android.bestnow.data.dao.EventDao;
 import com.yyw.android.bestnow.data.dao.PerHourUsageDao;
 
 import javax.inject.Singleton;
@@ -53,6 +54,12 @@ public class DaoDbModule {
     @Singleton
     AppDao providesAppDao(DaoSession daoSession){
         return daoSession.getAppDao();
+    }
+
+    @Provides
+    @Singleton
+    EventDao providesEventDao(DaoSession daoSession){
+        return daoSession.getEventDao();
     }
 
 }

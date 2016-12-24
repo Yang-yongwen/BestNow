@@ -5,10 +5,20 @@
         android:title="常规"
         android:key="pref_normal">
 
+        <CheckBoxPreference
+            android:key="pref_show_notification"
+            android:title="是否在状态栏显示使用情况"
+            android:defaultValue="true"/>
+
         <Preference
             android:key="pref_set_checkable_app"
             android:title="设置统计使用情况的App"
             android:summary="默认情况下将忽略手机自带的App"/>
+
+        <Preference
+            android:key="pref_set_usage_limit"
+            android:title="设置应用限时"
+            android:summary="快放下手机干活去吧"/>
 
     </PreferenceCategory>
 

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp"
+    android:id="@+id/divider_container"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:layout_height="48dp">
+
+    <View
+        android:background="@color/cardview_dark_background"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+
+    <ImageView
+        android:id="@+id/arrow"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_keyboard_arrow_down_black_36dp"
+        android:layout_centerVertical="true"
+        android:layout_width="32dp"
+        android:layout_height="32dp" />
+
+    <TextView
+        android:id="@+id/done_event_num_text"
+        android:layout_toRightOf="@id/arrow"
+        android:layout_marginLeft="17dp"
+        android:text="2个选中项"
+        android:textSize="16sp"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+
+</RelativeLayout>

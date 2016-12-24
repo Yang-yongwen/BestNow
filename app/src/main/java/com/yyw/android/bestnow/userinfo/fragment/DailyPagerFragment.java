@@ -9,11 +9,13 @@ import android.util.ArrayMap;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.yyw.android.bestnow.NowApplication;
 import com.yyw.android.bestnow.R;
 import com.yyw.android.bestnow.archframework.BaseActivity;
 import com.yyw.android.bestnow.archframework.BaseFragment;
 import com.yyw.android.bestnow.common.utils.DateUtils;
 import com.yyw.android.bestnow.data.dao.AppUsage;
+import com.yyw.android.bestnow.data.dao.Event;
 import com.yyw.android.bestnow.userinfo.UserInfoContract;
 
 import java.text.SimpleDateFormat;
@@ -36,6 +38,12 @@ public class DailyPagerFragment extends BaseFragment{
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.notifyDataSetChanged();
     }
 
     private void initView() {
@@ -119,7 +127,15 @@ public class DailyPagerFragment extends BaseFragment{
 
         @Override
         public int getCount() {
-            return 4;
+            String installDate= NowApplication.getInstance().getInstallDate();
+            Date date=null;
+            try {
+                date=new SimpleDateFormat("yyyyMMdd").parse(installDate);
+            }catch (Exception e){
+
+            }
+            int installedDays=DateUtils.daysBetween(date,new Date());
+            return installedDays+1;
         }
 
         @Override

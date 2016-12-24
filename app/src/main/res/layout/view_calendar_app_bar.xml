@@ -19,7 +19,7 @@
 
         <RelativeLayout
             android:id="@+id/date_picker_button"
-            android:layout_marginLeft="70dp"
+            android:layout_marginLeft="20dp"
             android:layout_width="wrap_content"
             android:layout_height="?attr/actionBarSize"
             android:background="?android:selectableItemBackground"

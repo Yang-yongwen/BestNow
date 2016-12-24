@@ -47,6 +47,12 @@ public class TopUsageItemView extends LinearLayout {
         setUsageTime(appUsage.getTotalUsageTime());
     }
 
+    public void reset(){
+        setAppIcon(getContext().getDrawable(R.mipmap.ic_launcher));
+        usageTimeTV.setText("-");
+        usagePercentTV.setText("-");
+    }
+
     private void setAppIcon(Drawable bitmap) {
         iconIV.setImageDrawable(bitmap);
     }

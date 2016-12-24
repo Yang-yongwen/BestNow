@@ -25,81 +25,123 @@ public class AppPool {
     private static final String STATISTIC_APP_REPO_INIT = "statistic_app_repo_init";
     private SPUtils spUtils;
     private boolean isInit;
-    private Map<String, App> unStatisticApps;
+    private Map<String, App> apps;
     private AppDao appDao;
     private Context context;
 
 
     public AppPool(Context context, SPUtils spUtils, AppDao dao) {
-//        this.spUtils = spUtils;
-//        this.appDao = dao;
-//        this.context = context;
-//        isInit = spUtils.getBooleanValue(STATISTIC_APP_REPO_INIT, false);
-//        if (!isInit) {
-//            init();
-//        } else {
-//            getUnStatisticAppFromDb();
-//        }
+        this.spUtils = spUtils;
+        this.appDao = dao;
+        this.context = context;
+        isInit = spUtils.getBooleanValue(STATISTIC_APP_REPO_INIT, false);
+        if (!isInit) {
+            init();
+        } else {
+            getAppsFromDb();
+        }
     }
 
     private void init() {
         isInit = true;
         spUtils.putBooleanValue(STATISTIC_APP_REPO_INIT, isInit);
-        unStatisticApps = getSystemApps();
-        appDao.insertInTx(unStatisticApps.values());
-    }
 
-    private void getUnStatisticAppFromDb() {
-        List<App> apps = appDao.queryBuilder().list();
-        unStatisticApps = new ArrayMap<>();
-        for (App app : apps) {
-            unStatisticApps.put(app.getPackageName(), app);
-        }
-    }
-
-    private Map<String, App> getSystemApps() {
         List<PackageInfo> packageInfoList = context.getPackageManager()
                 .getInstalledPackages(PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
-        Map<String, App> systemApps = new ArrayMap<>();
+        apps = new ArrayMap<>();
+        App app;
         for (PackageInfo info : packageInfoList) {
             if ((info.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 1) {
-                App App = new App(info.packageName,
-                        AppInfoProvider.getInstance().getAppLabel(info.packageName));
-                systemApps.put(info.packageName, App);
+                app = new App(info.packageName,
+                        AppInfoProvider.getInstance().getAppLabel(info.packageName), false,false,-1l);
+            } else {
+                app = new App(info.packageName,
+                        AppInfoProvider.getInstance().getAppLabel(info.packageName), true,false,-1l);
             }
+            apps.put(app.getPackageName(), app);
         }
-        return systemApps;
+        appDao.insertInTx(apps.values());
     }
 
+    private void getAppsFromDb() {
+        apps = new ArrayMap<>();
+        List<App> appList = appDao.queryBuilder().list();
+        for (App app : appList) {
+            apps.put(app.getPackageName(), app);
+        }
+    }
+
+
     public synchronized boolean shouldStatistic(String packageName) {
-        return !unStatisticApps.containsKey(packageName);
+        return !(apps.containsKey(packageName) && apps.get(packageName).getShouldStatistic() == false);
     }
 
     public synchronized Set<String> getUnStatisticApps() {
-        return unStatisticApps.keySet();
-    }
-
-    public synchronized Set<String> getStatisticApps() {
-        List<PackageInfo> packageInfoList = context.getPackageManager()
-                .getInstalledPackages(PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
-        Set set = new HashSet();
-        for (PackageInfo packageInfo : packageInfoList) {
-            if (!unStatisticApps.containsKey(packageInfo.packageName)) {
-                set.add(packageInfo.packageName);
+        Set<String> sets = new HashSet<>();
+        for (Map.Entry<String, App> entry : apps.entrySet()) {
+            if (entry.getValue().getShouldStatistic() == false) {
+                sets.add(entry.getKey());
             }
         }
-        return set;
+        return sets;
     }
 
-    public synchronized void setAppStatistic(String packageName, boolean shouldStatistic) {
-        if (shouldStatistic && unStatisticApps.containsKey(packageName)) {
-            App app = unStatisticApps.remove(packageName);
-            appDao.delete(app);
-        } else if (!shouldStatistic && !unStatisticApps.containsKey(packageName)) {
-            App app = new App(packageName,
-                    AppInfoProvider.getInstance().getAppLabel(packageName));
-            unStatisticApps.put(packageName, app);
-            appDao.insert(app);
+    public synchronized Map<String, App> getStatisticApps() {
+        Map<String, App> result = new ArrayMap<>();
+        for (Map.Entry<String, App> entry : apps.entrySet()) {
+            if (entry.getValue().getShouldStatistic() != null
+                    && entry.getValue().getShouldStatistic() == true) {
+                result.put(entry.getKey(), entry.getValue());
+            }
         }
+        return result;
     }
+
+    public synchronized Map<String, App> getStatisticAppsWithoutLimited() {
+        Map<String, App> result = new ArrayMap<>();
+        for (Map.Entry<String, App> entry : apps.entrySet()) {
+            if (entry.getValue().getShouldStatistic() != null
+                    && entry.getValue().getShouldStatistic() == true
+                    && (entry.getValue().getIsLimit()==null
+                    ||entry.getValue().getIsLimit()==false)) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+
+
+    public App get(String packageName) {
+        return apps.get(packageName);
+    }
+
+    public boolean containApp(String packageName) {
+        return apps.containsKey(packageName);
+    }
+
+    public void saveApps(App app) {
+        apps.put(app.getPackageName(),app);
+        appDao.insertOrReplace(app);
+    }
+
+    public void saveApps(List<App> savedApps) {
+        for (App app : savedApps) {
+            apps.put(app.getPackageName(), app);
+        }
+        appDao.insertOrReplaceInTx(savedApps);
+    }
+
+    public Map<String, App> getLimitedApps() {
+        Map<String, App> result = new ArrayMap<>();
+        for (Map.Entry<String, App> entry : apps.entrySet()) {
+            if (entry.getValue().getShouldStatistic()!=null
+                    && entry.getValue().getShouldStatistic()==true
+                    && entry.getValue().getIsLimit() != null
+                    && entry.getValue().getIsLimit() == true) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+
 }

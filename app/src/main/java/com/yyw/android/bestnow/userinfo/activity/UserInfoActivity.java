@@ -61,8 +61,16 @@ public class UserInfoActivity extends BaseActivity {
         }
     }
 
+    public UserInfoContract.Presenter getPresenter(){
+        return presenter;
+    }
+
     @Override
     protected void onDayClick(final Date dateClicked) {
+        if (!checkDate(dateClicked)){
+            showMessage("暂无数据，请选择有效日期");
+            return;
+        }
         setSubtitle(dateFormat.format(dateClicked));
         Intent intent=new Intent(this,DailyUsageActivity.class);
         intent.putExtra("date",new SimpleDateFormat("yyyyMMdd").format(dateClicked));
@@ -73,6 +81,21 @@ public class UserInfoActivity extends BaseActivity {
                 pagerFragment.changeToDate(dateClicked);
             }
         },200);
+    }
+
+    private boolean checkDate(Date date){
+        String installDateStr=NowApplication.getInstance().getInstallDate();
+        Date installDate=null;
+        try{
+            installDate=new SimpleDateFormat("yyyyMMdd").parse(installDateStr);
+        }catch (Exception e){
+        }
+        if (date.getTime()<installDate.getTime()
+                ||date.getTime()>new Date().getTime()){
+            return false;
+        } else {
+            return true;
+        }
     }
 
     @Override

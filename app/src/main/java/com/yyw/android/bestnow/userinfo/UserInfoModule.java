@@ -2,6 +2,7 @@ package com.yyw.android.bestnow.userinfo;
 
 import com.yyw.android.bestnow.archframework.FragmentScoped;
 import com.yyw.android.bestnow.data.appusage.UsageRepository;
+import com.yyw.android.bestnow.data.event.EventRepository;
 
 import dagger.Module;
 import dagger.Provides;
@@ -14,8 +15,8 @@ public class UserInfoModule {
 
     @Provides
     @FragmentScoped
-    UserInfoContract.Model providesUserInfoContractModel(UsageRepository repository){
-        return new UserInfoModel(repository);
+    UserInfoContract.Model providesUserInfoContractModel(UsageRepository repository, EventRepository eventRepository){
+        return new UserInfoModel(repository,eventRepository);
     }
 
 }

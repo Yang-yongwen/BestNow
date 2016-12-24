@@ -5,6 +5,8 @@ import android.util.Pair;
 
 import com.yyw.android.bestnow.data.appusage.UsageRepository;
 import com.yyw.android.bestnow.data.dao.AppUsage;
+import com.yyw.android.bestnow.data.dao.Event;
+import com.yyw.android.bestnow.data.event.EventRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +17,7 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by yangyongwen on 16/12/10.
@@ -23,16 +26,19 @@ import rx.functions.Func1;
 public class UserInfoModel implements UserInfoContract.Model{
     UsageRepository repository;
     Map<String,List<AppUsage>> appUsagesCache;
+    EventRepository eventRepository;
 
     @Inject
-    UserInfoModel(UsageRepository repository){
+    UserInfoModel(UsageRepository repository,EventRepository eventRepository){
         this.repository=repository;
+        this.eventRepository=eventRepository;
         appUsagesCache=new ArrayMap<>();
     }
 
     @Override
-    public Observable<List<String>> queryEventList(final String date) {
-        return null;
+    public Observable<List<Event>> queryEventList(final String date) {
+        return Observable.just(eventRepository.getEvents(date))
+                .subscribeOn(Schedulers.io());
     }
 
     @Override

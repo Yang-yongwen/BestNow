@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class AppInfoProvider {
     private static final String TAG = LogUtils.makeLogTag(AppInfoProvider.class);
-    private static final int CACHE_DRAWABLE_SIZE = 70;
+    private static final int CACHE_DRAWABLE_SIZE = 170;
     private LruCache<String, Drawable> drawableCache;
     private Map<String, String> appLabels;
     private Context context;
@@ -48,6 +48,9 @@ public class AppInfoProvider {
                 appLabels.put(packageName, label);
             } catch (PackageManager.NameNotFoundException e) {
                 LogUtils.d(TAG, "package name not found: " + packageName);
+            } catch (Exception e) {
+                label = "";
+                LogUtils.d(TAG, "get " + packageName + " label failed. exception: " + e.getMessage());
             }
         }
         return label;
@@ -61,6 +64,8 @@ public class AppInfoProvider {
                 drawableCache.put(packageName, drawable);
             } catch (PackageManager.NameNotFoundException e) {
                 LogUtils.d(TAG, "package name not found: " + packageName);
+            } catch (Exception e) {
+                LogUtils.d(TAG, "exception" + e.getMessage());
             }
         }
         return drawable;

@@ -19,7 +19,7 @@ import com.yyw.android.bestnow.R;
 import com.yyw.android.bestnow.common.utils.LogUtils;
 import com.yyw.android.bestnow.common.utils.SPUtils;
 import com.yyw.android.bestnow.data.appusage.AppUsageAgent;
-import com.yyw.android.bestnow.setting.SettingActivity;
+import com.yyw.android.bestnow.setting.activity.SettingActivity;
 import com.yyw.android.bestnow.view.behavior.DragBehavior;
 
 import java.text.SimpleDateFormat;

@@ -25,17 +25,18 @@ public class AppUsageManager {
     SPUtils spUtils;
     JobExecutor executor;
 
-    AppUsageProvider appUsageProvider;
+    AppUsageProviderNew appUsageProvider;
     UsageRepository repository;
 
     @Inject
     public AppUsageManager(Context context, SPUtils spUtils,
-                           JobExecutor executor, UsageRepository repository,AppPool appPool) {
+                           JobExecutor executor, UsageRepository repository,
+                           AppUsageProviderNew appUsageProviderNew) {
         this.context = context;
         this.spUtils = spUtils;
         this.executor = executor;
         this.repository = repository;
-        appUsageProvider = new AppUsageProvider(context, repository, spUtils,appPool);
+        this.appUsageProvider = appUsageProviderNew;
     }
 
     public synchronized void update() {
@@ -43,6 +44,13 @@ public class AppUsageManager {
         updateAppUsage(updatedAppUsages);
         updatePerHourUsageNew(updatedAppUsages);
     }
+
+    public synchronized void update(long lastUpdateTime) {
+        Map<String, AppUsage> updatedAppUsages = appUsageProvider.getAppUsageSinceLastUpdate(lastUpdateTime);
+        updateAppUsage(updatedAppUsages);
+        updatePerHourUsageNew(updatedAppUsages);
+    }
+
 
     private void updateAppUsage(Map<String, AppUsage> updatedAppUsages) {
         AppUsage updatedAppUsage;

@@ -79,8 +79,8 @@ public class AppDailyUsageFragment extends BaseFragment implements AppDailyUsage
         packageName = args.getString(PACKAGE_NAME);
         dateString = args.getString(DATE);
         try {
-            date=new SimpleDateFormat("yyyyMMdd").parse(dateString);
-        }catch (ParseException e){
+            date = new SimpleDateFormat("yyyyMMdd").parse(dateString);
+        } catch (ParseException e) {
 
         }
     }
@@ -203,8 +203,11 @@ public class AppDailyUsageFragment extends BaseFragment implements AppDailyUsage
             long hourTime = perHourUsage.getTime();
             String hour = dateFormat.format(new Date(hourTime));
             index = Integer.parseInt(hour);
-            minutes = (int) Math.floor((double) perHourUsage.getUsageTime() / 1000.0 / 60.0);
-            minutes %= 60;
+            long second = perHourUsage.getUsageTime() / 1000;
+            minutes = (int) second / 60;
+            minutes = second % 60 > 30 ? minutes + 1 : minutes;
+//            minutes = (int) Math.floor((double) perHourUsage.getUsageTime() / 1000.0 / 60.0);
+//            minutes %= 60;
             entries.set(index, new BarEntry(index, minutes));
         }
         BarDataSet set;

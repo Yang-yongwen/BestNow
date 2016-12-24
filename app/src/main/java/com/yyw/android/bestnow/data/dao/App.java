@@ -8,6 +8,9 @@ public class App {
 
     private String packageName;
     private String label;
+    private Boolean shouldStatistic;
+    private Boolean isLimit;
+    private Long limitTime;
 
     public App() {
     }
@@ -16,9 +19,12 @@ public class App {
         this.packageName = packageName;
     }
 
-    public App(String packageName, String label) {
+    public App(String packageName, String label, Boolean shouldStatistic, Boolean isLimit, Long limitTime) {
         this.packageName = packageName;
         this.label = label;
+        this.shouldStatistic = shouldStatistic;
+        this.isLimit = isLimit;
+        this.limitTime = limitTime;
     }
 
     public String getPackageName() {
@@ -35,6 +41,30 @@ public class App {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public Boolean getShouldStatistic() {
+        return shouldStatistic;
+    }
+
+    public void setShouldStatistic(Boolean shouldStatistic) {
+        this.shouldStatistic = shouldStatistic;
+    }
+
+    public Boolean getIsLimit() {
+        return isLimit;
+    }
+
+    public void setIsLimit(Boolean isLimit) {
+        this.isLimit = isLimit;
+    }
+
+    public Long getLimitTime() {
+        return limitTime;
+    }
+
+    public void setLimitTime(Long limitTime) {
+        this.limitTime = limitTime;
     }
 
 }

@@ -111,7 +111,7 @@ public class LogUtils {
         date = new Date();
     }
 
-    private static LogUtils getInstance() {
+    private synchronized static LogUtils getInstance() {
         if (instance == null) {
             instance = new LogUtils();
         }

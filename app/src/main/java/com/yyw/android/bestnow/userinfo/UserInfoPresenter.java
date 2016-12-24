@@ -4,6 +4,7 @@ import android.util.ArrayMap;
 
 import com.yyw.android.bestnow.common.utils.LogUtils;
 import com.yyw.android.bestnow.data.dao.AppUsage;
+import com.yyw.android.bestnow.data.dao.Event;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -96,8 +98,30 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
     }
 
     @Override
-    public void loadEventList(String date) {
+    public void loadEventList(final String date) {
+        Subscription subscription=model.queryEventList(date)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Event>>() {
+                    @Override
+                    public void onCompleted() {
 
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(List<Event> events) {
+                        UserInfoContract.View view=views.get(date);
+                        if (view!=null){
+                            view.displayEventList(date,events);
+                        }
+                    }
+                });
+        subscriptions.add(subscription);
     }
 
     @Override

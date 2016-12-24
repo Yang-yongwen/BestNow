@@ -1,8 +1,9 @@
-package com.yyw.android.bestnow.setting;
+package com.yyw.android.bestnow.setting.activity;
 
 import android.os.Bundle;
 import android.view.Menu;
 
+import com.yyw.android.bestnow.NowApplication;
 import com.yyw.android.bestnow.R;
 import com.yyw.android.bestnow.archframework.BaseActivity;
 
@@ -27,7 +28,7 @@ public class SettingActivity extends BaseActivity {
 
     @Override
     protected void setupActivityComponent() {
-
+        NowApplication.getApplicationComponent().inject(this);
     }
 
     @Override

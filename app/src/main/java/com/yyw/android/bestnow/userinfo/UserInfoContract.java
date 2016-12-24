@@ -4,6 +4,7 @@ import com.yyw.android.bestnow.archframework.BaseModel;
 import com.yyw.android.bestnow.archframework.BasePresenter;
 import com.yyw.android.bestnow.archframework.BaseView;
 import com.yyw.android.bestnow.data.dao.AppUsage;
+import com.yyw.android.bestnow.data.dao.Event;
 
 import java.util.Date;
 import java.util.List;
@@ -18,7 +19,7 @@ public interface UserInfoContract {
 
     interface View extends BaseView<Presenter> {
         void displayTopAppUsages(List<AppUsage> topAppUsages);
-        void displayEventList(String date, List<String> events);
+        void displayEventList(String date, List<Event> events);
         String getDate();
     }
 
@@ -32,7 +33,7 @@ public interface UserInfoContract {
     interface Model extends BaseModel {
         Observable<List<AppUsage>> queryTopAppUsages(String date);
 
-        Observable<List<String>> queryEventList(String date);
+        Observable<List<Event>> queryEventList(String date);
     }
 
 }

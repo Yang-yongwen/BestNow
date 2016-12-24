@@ -26,7 +26,6 @@
 
             <ImageView
                 android:id="@+id/selected_app_icon"
-                android:src="@drawable/ic_add_box_white_24dp"
                 android:layout_marginTop="40dp"
                 android:clickable="true"
                 android:layout_centerHorizontal="true"
@@ -36,7 +35,6 @@
 
             <TextView
                 android:id="@+id/selected_app_usage_time"
-                android:text="1小时17分钟"
                 android:layout_marginTop="20dp"
                 android:layout_below="@id/selected_app_icon"
                 android:layout_centerHorizontal="true"
@@ -51,6 +49,15 @@
             android:layout_height="match_parent">
         </android.support.v7.widget.RecyclerView>
 
+        <TextView
+            android:id="@+id/usage_chart_stub"
+            android:visibility="gone"
+            android:text="暂无使用情况"
+            android:textSize="24dp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
     </FrameLayout>
 
     <LinearLayout
@@ -58,16 +65,16 @@
         android:layout_width="match_parent"
         android:layout_height="70dp">
         <Button
-            android:id="@+id/show_pie"
-            android:text="pie"
+            android:id="@+id/show_list"
+            android:text="list"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/show_list"
-            android:text="list"
+            android:id="@+id/show_pie"
+            android:text="pie"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:layout_width="wrap_content"
