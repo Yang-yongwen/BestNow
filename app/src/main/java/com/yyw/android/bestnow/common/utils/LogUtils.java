@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 /**
- * Created by samsung on 2016/10/28.
+ * Created by yangyongwen on 2016/10/28.
  */
 
 public class LogUtils {
@@ -32,6 +32,7 @@ public class LogUtils {
     private static int MAX_LOG_TAG_LENGTH = 30;
     public static boolean LOGGING_ENABLED = true;
     public static boolean LOGGING_TO_FILE = true;
+    public static boolean USE_PRETTY_LOG = false;
 
     public static File logFileDir;
     private static LogUtils instance;
@@ -162,33 +163,63 @@ public class LogUtils {
 
     public static void v(final String tag, String msg) {
         if (LOGGING_ENABLED) {
-            Logger.t(tag).v(msg);
+            if (USE_PRETTY_LOG) {
+                Logger.t(tag).v(msg);
+            } else {
+                Log.v(tag, msg);
+                instance.nativeLogger.info(instance.buildFileLogMessage("V", msg));
+            }
         }
     }
 
     public static void i(final String tag, String msg) {
         if (LOGGING_ENABLED) {
-            Logger.t(tag).i(msg);
+            if (USE_PRETTY_LOG) {
+                Logger.t(tag).i(msg);
+            } else {
+                Log.i(tag, msg);
+                instance.nativeLogger.info(instance.buildFileLogMessage("I", msg));
+            }
         }
     }
 
     public static void w(final String tag, String msg) {
         if (LOGGING_ENABLED) {
-            Logger.t(tag).w(msg);
+            if (USE_PRETTY_LOG) {
+                Logger.t(tag).w(msg);
+            } else {
+                Log.w(tag, msg);
+                instance.nativeLogger.warning(instance.buildFileLogMessage("W", msg));
+            }
+        }
+    }
+
+    public static void e(final String tag, Throwable e) {
+        if (LOGGING_ENABLED) {
+            String msg = Log.getStackTraceString(e);
+            e(tag, msg);
         }
     }
 
     public static void e(final String tag, String msg) {
         if (LOGGING_ENABLED) {
-            Logger.t(tag).e(msg);
+            if (USE_PRETTY_LOG) {
+                Logger.t(tag).e(msg);
+            } else {
+                Log.e(tag, msg);
+                instance.nativeLogger.severe(instance.buildFileLogMessage("E", msg));
+            }
         }
     }
 
     public static void d(final String tag, String msg) {
         if (LOGGING_ENABLED) {
-//            Logger.t(tag).d(msg);
-            Log.d(tag, msg);
-            instance.nativeLogger.info(instance.buildFileLogMessage("D", msg));
+            if (USE_PRETTY_LOG) {
+                Logger.t(tag).d(msg);
+            } else {
+                Log.d(tag, msg);
+                instance.nativeLogger.info(instance.buildFileLogMessage("D", msg));
+            }
         }
     }
 }

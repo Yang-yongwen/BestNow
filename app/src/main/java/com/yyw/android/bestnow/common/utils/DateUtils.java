@@ -9,6 +9,9 @@ import java.util.Date;
  */
 
 public class DateUtils {
+    public static final SimpleDateFormat FORMAT_DAY = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat FORMAT_DAY_HOUR_MIN_SEC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     private DateUtils() {
     }
 
@@ -32,8 +35,7 @@ public class DateUtils {
     }
 
     public static String formatTime(long time) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return format.format(time);
+        return FORMAT_DAY_HOUR_MIN_SEC.format(time);
     }
 
     public static int daysBetween(Date date1, Date date2) {

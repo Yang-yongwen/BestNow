@@ -1,6 +1,5 @@
 package com.yyw.android.bestnow.data.appusage;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -19,7 +18,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.Display;
-import android.widget.Toast;
 
 import com.yyw.android.bestnow.NowApplication;
 import com.yyw.android.bestnow.R;
@@ -126,7 +124,7 @@ public class UpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent==null){
+        if (intent == null) {
             return START_STICKY;
         }
         String func = intent.getStringExtra(TYPE_FUNC);
@@ -285,9 +283,9 @@ public class UpdateService extends Service {
         mBuilder.setContentIntent(resultPendingIntent);
 
 
-        Uri soundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         mBuilder.setSound(soundUri);
-        mBuilder.setVibrate(new long[]{1000,1000,1000,1000});
+        mBuilder.setVibrate(new long[]{1000, 1000, 1000, 1000});
         mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
 
 

@@ -32,7 +32,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 
 /**
- * Created by samsung on 2016/10/27.
+ * Created by yangyongwen on 2016/10/27.
  */
 
 public abstract class BaseActivity extends AppCompatActivity {
@@ -62,6 +62,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setupActivityComponent();
         setUpActionBar();
+        startActivityForResult();
     }
 
     private void setUpActionBar() {
@@ -229,7 +230,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
-    protected void setUpNavigationUp(){
+    protected void setUpNavigationUp() {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
@@ -243,15 +244,15 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main,menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id==R.id.action_setting){
-            Intent intent=new Intent(this, SettingActivity.class);
+        if (id == R.id.action_setting) {
+            Intent intent = new Intent(this, SettingActivity.class);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

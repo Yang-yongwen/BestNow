@@ -10,6 +10,7 @@ import android.util.ArrayMap;
 
 import java.util.Map;
 // KEEP INCLUDES END
+
 /**
  * Entity mapped to table "APP_USAGE".
  */

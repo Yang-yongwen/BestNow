@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * Created by samsung on 2016/10/28.
+ * Created by yangyongwen on 2016/10/28.
  */
 
 @Singleton

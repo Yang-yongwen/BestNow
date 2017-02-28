@@ -16,7 +16,7 @@ import com.yyw.android.bestnow.data.dao.App;
 import java.util.List;
 
 /**
- * Created by samsung on 2016/12/16.
+ * Created by yangyongwen on 2016/12/16.
  */
 
 public class AppListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -26,7 +26,7 @@ public class AppListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     List<App> apps;
 
     public App selectedApp;
-    public int selectIndex=-1;
+    public int selectIndex = -1;
 
     public AppListAdapter(Context context, List<App> apps) {
         this.context = context;
@@ -34,13 +34,13 @@ public class AppListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
 
-    public App getSelectedApp(){
+    public App getSelectedApp() {
         return apps.get(selectIndex);
     }
 
-    public void deleteSelectedApp(){
+    public void deleteSelectedApp() {
         apps.remove(selectIndex);
-        selectIndex=-1;
+        selectIndex = -1;
         notifyDataSetChanged();
     }
 
@@ -57,19 +57,19 @@ public class AppListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    selectIndex=index;
+                    selectIndex = index;
                     notifyDataSetChanged();
                 }
             });
         }
 
-        void update(App app,int index){
+        void update(App app, int index) {
             appLabelTV.setText(AppInfoProvider.getInstance().getAppLabel(app.getPackageName()));
             appIconIV.setImageDrawable(AppInfoProvider.getInstance().getAppIcon(app.getPackageName()));
-            this.index=index;
-            if (index==selectIndex){
+            this.index = index;
+            if (index == selectIndex) {
                 itemView.setBackgroundColor(context.getResources().getColor(R.color.colorBackground));
-            }else {
+            } else {
                 itemView.setBackgroundColor(Color.WHITE);
             }
 
@@ -89,7 +89,7 @@ public class AppListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (holder instanceof AppItemVH) {
             AppItemVH vh = ((AppItemVH) holder);
             App app = apps.get(position);
-            vh.update(app,position);
+            vh.update(app, position);
         }
     }
 

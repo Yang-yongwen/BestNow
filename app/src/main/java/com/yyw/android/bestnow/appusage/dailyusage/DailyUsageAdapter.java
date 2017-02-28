@@ -14,9 +14,7 @@ import com.yyw.android.bestnow.appusage.singleappusage.AppDailyUsageFragment;
 import com.yyw.android.bestnow.common.utils.DateUtils;
 import com.yyw.android.bestnow.data.dao.AppUsage;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,8 +33,8 @@ public class DailyUsageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         notifyDataSetChanged();
     }
 
-    public void setDate(String date){
-        this.date=date;
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public static class AppUsageViewHolder extends RecyclerView.ViewHolder {
@@ -54,7 +52,7 @@ public class DailyUsageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             ButterKnife.bind(this, view);
         }
 
-        public void update(final AppUsage appUsage, final String date){
+        public void update(final AppUsage appUsage, final String date) {
             usageTimeTV.setText(DateUtils.toDisplayFormat(appUsage.getTotalUsageTime()));
             launchCountTV.setText(String.valueOf(appUsage.getTotalLaunchCount()) + "次");
             appLabelTV.setText(appUsage.getLabel());
@@ -82,7 +80,7 @@ public class DailyUsageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         AppUsage appUsage = appUsages.get(position);
         AppUsageViewHolder vh = (AppUsageViewHolder) holder;
-        vh.update(appUsage,date);
+        vh.update(appUsage, date);
     }
 
     @Override

@@ -8,7 +8,6 @@ import com.yyw.android.bestnow.data.dao.Event;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -24,29 +23,29 @@ import rx.subscriptions.CompositeSubscription;
  * Created by yangyongwen on 16/12/10.
  */
 
-public class UserInfoPresenter implements UserInfoContract.Presenter{
-    private static final String TAG=LogUtils.makeLogTag(UserInfoPresenter.class);
+public class UserInfoPresenter implements UserInfoContract.Presenter {
+    private static final String TAG = LogUtils.makeLogTag(UserInfoPresenter.class);
     UserInfoContract.Model model;
-    Map<String,UserInfoContract.View> views;
+    Map<String, UserInfoContract.View> views;
     private CompositeSubscription subscriptions;
 
     @Inject
-    UserInfoPresenter(UserInfoModel model){
-        this.model=model;
-        views=new ArrayMap<>();
-        subscriptions=new CompositeSubscription();
+    UserInfoPresenter(UserInfoModel model) {
+        this.model = model;
+        views = new ArrayMap<>();
+        subscriptions = new CompositeSubscription();
     }
 
     @Override
     public void addView(String date, UserInfoContract.View view) {
-        views.put(date,view);
-        LogUtils.d(TAG,"add view: "+date);
+        views.put(date, view);
+        LogUtils.d(TAG, "add view: " + date);
     }
 
     @Override
     public void removeView(String date) {
         views.remove(date);
-        LogUtils.d(TAG,"remove view: "+date);
+        LogUtils.d(TAG, "remove view: " + date);
     }
 
     @Override
@@ -56,7 +55,7 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
 
     @Override
     public void loadTopAppUsages(final String date) {
-        Subscription subscription=model.queryTopAppUsages(date)
+        Subscription subscription = model.queryTopAppUsages(date)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<AppUsage>>() {
                     @Override
@@ -66,15 +65,15 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
 
                     @Override
                     public void onError(Throwable e) {
-                        LogUtils.d(TAG,"loadTopAppUsages failed: "+e.getMessage());
+                        LogUtils.d(TAG, "loadTopAppUsages failed: " + e.getMessage());
                     }
 
                     @Override
                     public void onNext(List<AppUsage> appUsages) {
-                        LogUtils.d(TAG,"loaded top appUsage: "+date);
-                        UserInfoContract.View view=views.get(date);
+                        LogUtils.d(TAG, "loaded top appUsage: " + date);
+                        UserInfoContract.View view = views.get(date);
                         sortAppUsages(appUsages);
-                        if (view!=null){
+                        if (view != null) {
                             view.displayTopAppUsages(appUsages);
                         }
                     }
@@ -99,7 +98,7 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
 
     @Override
     public void loadEventList(final String date) {
-        Subscription subscription=model.queryEventList(date)
+        Subscription subscription = model.queryEventList(date)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<Event>>() {
@@ -115,9 +114,9 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
 
                     @Override
                     public void onNext(List<Event> events) {
-                        UserInfoContract.View view=views.get(date);
-                        if (view!=null){
-                            view.displayEventList(date,events);
+                        UserInfoContract.View view = views.get(date);
+                        if (view != null) {
+                            view.displayEventList(date, events);
                         }
                     }
                 });
@@ -139,6 +138,6 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
         subscriptions.clear();
         model.cleanUp();
         views.clear();
-        views=null;
+        views = null;
     }
 }

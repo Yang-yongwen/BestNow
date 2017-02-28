@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by samsung on 2016/11/2.
+ * Created by yangyongwen on 2016/11/2.
  */
 
 public class CirclePicker extends View {

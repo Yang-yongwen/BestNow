@@ -1,7 +1,6 @@
 package com.yyw.android.bestnow.view;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -18,7 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by samsung on 2016/10/31.
+ * Created by yangyongwen on 2016/10/31.
  */
 
 public class TopUsageItemView extends LinearLayout {
@@ -42,12 +41,12 @@ public class TopUsageItemView extends LinearLayout {
         ButterKnife.bind(this);
     }
 
-    public void setAppUsage(AppUsage appUsage){
+    public void setAppUsage(AppUsage appUsage) {
         setAppIcon(appUsage.getAppIcon());
         setUsageTime(appUsage.getTotalUsageTime());
     }
 
-    public void reset(){
+    public void reset() {
         setAppIcon(getContext().getDrawable(R.mipmap.ic_launcher));
         usageTimeTV.setText("-");
         usagePercentTV.setText("-");
@@ -71,9 +70,9 @@ public class TopUsageItemView extends LinearLayout {
         if (minute < 60) {
             return Long.toString(minute) + "分钟";
         }
-        long hour=minute/60;
-        minute%=60;
-        return String.valueOf(hour)+"小时"+String.valueOf(minute)+"分钟";
+        long hour = minute / 60;
+        minute %= 60;
+        return String.valueOf(hour) + "小时" + String.valueOf(minute) + "分钟";
     }
 
     public void setUsagePercent(double percent) {

@@ -273,13 +273,12 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 showMessage("选择的提醒时间无效，请重新选择");
                 return;
             }
-            showMessage("hour: " + hourOfDay + " minute: " + minute);
             editingEvent.setHasAlarm(true);
-            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            Calendar calendar=Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
-            calendar.set(Calendar.MINUTE,minute);
-            String alarmTime=simpleDateFormat.format(new Date(calendar.getTimeInMillis()));
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
+            String alarmTime = simpleDateFormat.format(new Date(calendar.getTimeInMillis()));
             editingEvent.setAlarmTime(alarmTime);
             EventScheduler.getInstance().addEventJob(editingEvent);
             notifyDataSetChanged();

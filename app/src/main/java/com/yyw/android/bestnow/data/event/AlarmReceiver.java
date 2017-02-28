@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
 /**
- * Created by samsung on 2016/12/19.
+ * Created by yangyongwen on 2016/12/19.
  */
 
 public class AlarmReceiver extends WakefulBroadcastReceiver {

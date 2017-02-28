@@ -13,7 +13,7 @@ import com.yyw.android.bestnow.common.utils.LogUtils;
 import com.yyw.android.bestnow.userinfo.activity.UserInfoActivity;
 
 /**
- * Created by samsung on 2016/12/19.
+ * Created by yangyongwen on 2016/12/19.
  */
 
 public class ScheduleService extends IntentService {
@@ -55,7 +55,7 @@ public class ScheduleService extends IntentService {
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
-        mBuilder.setVibrate(new long[]{1000,1000,1000,1000});
+        mBuilder.setVibrate(new long[]{1000, 1000, 1000, 1000});
         mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
 
         mBuilder.setContentIntent(resultPendingIntent);

@@ -3,6 +3,7 @@ package com.yyw.android.bestnow.data.appusage;
 import android.content.Context;
 
 import com.yyw.android.bestnow.common.utils.LogUtils;
+import com.yyw.android.bestnow.common.utils.PermissionUtils;
 import com.yyw.android.bestnow.common.utils.SPUtils;
 import com.yyw.android.bestnow.data.dao.AppUsage;
 import com.yyw.android.bestnow.data.dao.PerHourUsage;
@@ -16,7 +17,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * Created by samsung on 2016/10/28.
+ * Created by yangyongwen on 2016/10/28.
  */
 @Singleton
 public class AppUsageManager {
@@ -40,12 +41,20 @@ public class AppUsageManager {
     }
 
     public synchronized void update() {
+        if (!PermissionUtils.hasUsagePermission(context)) {
+            LogUtils.d(TAG, "no usage state permission");
+            return;
+        }
         Map<String, AppUsage> updatedAppUsages = appUsageProvider.getAppUsageSinceLastUpdate();
         updateAppUsage(updatedAppUsages);
         updatePerHourUsageNew(updatedAppUsages);
     }
 
     public synchronized void update(long lastUpdateTime) {
+        if (!PermissionUtils.hasUsagePermission(context)) {
+            LogUtils.d(TAG, "no usage state permission");
+            return;
+        }
         Map<String, AppUsage> updatedAppUsages = appUsageProvider.getAppUsageSinceLastUpdate(lastUpdateTime);
         updateAppUsage(updatedAppUsages);
         updatePerHourUsageNew(updatedAppUsages);

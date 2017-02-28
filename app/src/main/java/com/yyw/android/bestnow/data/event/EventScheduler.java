@@ -14,7 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 /**
- * Created by samsung on 2016/12/19.
+ * Created by yangyongwen on 2016/12/19.
  */
 
 public class EventScheduler {
@@ -49,7 +49,7 @@ public class EventScheduler {
         } catch (ParseException e) {
             LogUtils.d(TAG, "parse error: " + e.getMessage());
         }
-        if (triggerAtMills > 0 && triggerAtMills>=System.currentTimeMillis()-1000*20) {
+        if (triggerAtMills > 0 && triggerAtMills >= System.currentTimeMillis() - 1000 * 20) {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAtMills, pendingIntent);
         }

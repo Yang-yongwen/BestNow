@@ -22,7 +22,7 @@ import com.yyw.android.bestnow.setting.activity.InputFilterMinMax;
 import java.util.List;
 
 /**
- * Created by samsung on 2016/12/16.
+ * Created by yangyongwen on 2016/12/16.
  */
 
 public class AppLimitedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

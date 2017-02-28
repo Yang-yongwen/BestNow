@@ -19,10 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 /**
- * Created by samsung on 2016/12/7.
+ * Created by yangyongwen on 2016/12/7.
  */
 
 public class AppUsageProvider {
@@ -45,11 +43,11 @@ public class AppUsageProvider {
     AppPool appPool;
 
 
-    AppUsageProvider(Context context, UsageRepository repository, SPUtils spUtils,AppPool appPool) {
+    AppUsageProvider(Context context, UsageRepository repository, SPUtils spUtils, AppPool appPool) {
         this.context = context;
         this.repository = repository;
         this.spUtils = spUtils;
-        this.appPool=appPool;
+        this.appPool = appPool;
         userInstallApp = Utils.getUserInstalledPackageInfo(context);
         lastEventType = spUtils.getIntValue(LAST_EVENT_TYPE, -1);
         lastEventPackage = spUtils.getStringValue(LAST_EVENT_PACKAGE, "");

@@ -31,7 +31,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 
 /**
- * Created by samsung on 2016/11/3.
+ * Created by yangyongwen on 2016/11/3.
  */
 
 public class DailyInfoFragment extends BaseFragment implements UserInfoContract.View {
@@ -80,7 +80,7 @@ public class DailyInfoFragment extends BaseFragment implements UserInfoContract.
         if (events == null || events.data == null || events.data.size() <= 0) {
             return;
         }
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String today = simpleDateFormat.format(new Date());
         if (today.equals(date)) {
             displayEventList(date, events.data);
@@ -109,7 +109,7 @@ public class DailyInfoFragment extends BaseFragment implements UserInfoContract.
     private void initArgs() {
         Bundle args = getArguments();
         if (args == null) {
-            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             date = format.format(new Date());
         } else {
             date = args.getString("date");
@@ -169,7 +169,7 @@ public class DailyInfoFragment extends BaseFragment implements UserInfoContract.
 
     @OnClick(R.id.event_list_container)
     void startEventListActivity() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String today = dateFormat.format(new Date());
         if (!today.equals(date)) {
             return;

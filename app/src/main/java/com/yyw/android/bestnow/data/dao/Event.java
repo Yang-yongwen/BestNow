@@ -4,6 +4,7 @@ package com.yyw.android.bestnow.data.dao;
 
 // KEEP INCLUDES - put your custom includes here
 // KEEP INCLUDES END
+
 /**
  * Entity mapped to table "EVENT".
  */

@@ -3,7 +3,6 @@ package com.yyw.android.bestnow.appusage.dailyusage;
 import com.yyw.android.bestnow.data.appusage.UsageRepository;
 import com.yyw.android.bestnow.data.dao.AppUsage;
 
-import java.util.Date;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -24,7 +23,7 @@ public class AppUsageModel implements DailyUsageContract.Model {
     }
 
     @Override
-    public Observable<Map<String, AppUsage>> queryAppUsage(Date start, Date end) {
+    public Observable<Map<String, AppUsage>> queryAppUsage(String start, String end) {
         return usageRepository.getAppUsageObservableIn(start, end);
     }
 

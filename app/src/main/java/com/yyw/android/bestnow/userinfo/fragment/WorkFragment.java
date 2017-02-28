@@ -8,7 +8,7 @@ import com.yyw.android.bestnow.archframework.BaseFragment;
 import butterknife.BindView;
 
 /**
- * Created by samsung on 2016/11/4.
+ * Created by yangyongwen on 2016/11/4.
  */
 
 public class WorkFragment extends BaseFragment {

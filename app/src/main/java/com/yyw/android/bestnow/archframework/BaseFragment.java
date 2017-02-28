@@ -10,7 +10,7 @@ import android.widget.Toast;
 import butterknife.ButterKnife;
 
 /**
- * Created by samsung on 2016/10/27.
+ * Created by yangyongwen on 2016/10/27.
  */
 
 public abstract class BaseFragment extends Fragment {

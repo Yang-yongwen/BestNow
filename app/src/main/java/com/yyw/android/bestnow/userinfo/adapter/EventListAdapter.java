@@ -13,11 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yyw.android.bestnow.R;
+import com.yyw.android.bestnow.common.utils.DateUtils;
 import com.yyw.android.bestnow.data.dao.Event;
 import com.yyw.android.bestnow.data.event.EventRepository;
 import com.yyw.android.bestnow.eventlist.EventListActivity;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 
 /**
- * Created by samsung on 2016/11/4.
+ * Created by yangyongwen on 2016/11/4.
  */
 
 public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -34,7 +34,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     List<Event> doneEvents;
     EventRepository eventRepository;
     Context context;
-
     String date;
 
 
@@ -71,8 +70,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             eventContentTV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-                    String today = dateFormat.format(new Date());
+                    String today = DateUtils.FORMAT_DAY.format(new Date());
                     if (!today.equals(date)) {
                         return;
                     }

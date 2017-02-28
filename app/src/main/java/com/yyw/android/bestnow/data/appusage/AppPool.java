@@ -53,10 +53,10 @@ public class AppPool {
         for (PackageInfo info : packageInfoList) {
             if ((info.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 1) {
                 app = new App(info.packageName,
-                        AppInfoProvider.getInstance().getAppLabel(info.packageName), false,false,-1l);
+                        AppInfoProvider.getInstance().getAppLabel(info.packageName), false, false, -1l);
             } else {
                 app = new App(info.packageName,
-                        AppInfoProvider.getInstance().getAppLabel(info.packageName), true,false,-1l);
+                        AppInfoProvider.getInstance().getAppLabel(info.packageName), true, false, -1l);
             }
             apps.put(app.getPackageName(), app);
         }
@@ -102,8 +102,8 @@ public class AppPool {
         for (Map.Entry<String, App> entry : apps.entrySet()) {
             if (entry.getValue().getShouldStatistic() != null
                     && entry.getValue().getShouldStatistic() == true
-                    && (entry.getValue().getIsLimit()==null
-                    ||entry.getValue().getIsLimit()==false)) {
+                    && (entry.getValue().getIsLimit() == null
+                    || entry.getValue().getIsLimit() == false)) {
                 result.put(entry.getKey(), entry.getValue());
             }
         }
@@ -120,7 +120,7 @@ public class AppPool {
     }
 
     public void saveApps(App app) {
-        apps.put(app.getPackageName(),app);
+        apps.put(app.getPackageName(), app);
         appDao.insertOrReplace(app);
     }
 
@@ -134,8 +134,8 @@ public class AppPool {
     public Map<String, App> getLimitedApps() {
         Map<String, App> result = new ArrayMap<>();
         for (Map.Entry<String, App> entry : apps.entrySet()) {
-            if (entry.getValue().getShouldStatistic()!=null
-                    && entry.getValue().getShouldStatistic()==true
+            if (entry.getValue().getShouldStatistic() != null
+                    && entry.getValue().getShouldStatistic() == true
                     && entry.getValue().getIsLimit() != null
                     && entry.getValue().getIsLimit() == true) {
                 result.put(entry.getKey(), entry.getValue());

@@ -4,7 +4,7 @@ import android.text.InputFilter;
 import android.text.Spanned;
 
 /**
- * Created by samsung on 2016/12/16.
+ * Created by yangyongwen on 2016/12/16.
  */
 
 public class InputFilterMinMax implements InputFilter {
@@ -19,10 +19,10 @@ public class InputFilterMinMax implements InputFilter {
     @Override
     public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
         try {
-            int input=Integer.parseInt(dest.toString()+source.toString());
-            if (isInRange(min,max,input))
+            int input = Integer.parseInt(dest.toString() + source.toString());
+            if (isInRange(min, max, input))
                 return null;
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
 
         }
         return "";

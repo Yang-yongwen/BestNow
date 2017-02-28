@@ -26,7 +26,6 @@ import com.yyw.android.bestnow.common.utils.DateUtils;
 import com.yyw.android.bestnow.data.appusage.AppInfoProvider;
 import com.yyw.android.bestnow.data.dao.PerHourUsage;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,8 +51,7 @@ public class AppDailyUsageFragment extends BaseFragment implements AppDailyUsage
     TextView appUsageTV;
 
     private String packageName;
-    private Date date;
-    private String dateString;
+    private String date;
     private List<PerHourUsage> perHourUsages;
 
     private AppDailyUsageContract.Presenter presenter;
@@ -77,12 +75,7 @@ public class AppDailyUsageFragment extends BaseFragment implements AppDailyUsage
     private void initArgs() {
         Bundle args = getArguments();
         packageName = args.getString(PACKAGE_NAME);
-        dateString = args.getString(DATE);
-        try {
-            date = new SimpleDateFormat("yyyyMMdd").parse(dateString);
-        } catch (ParseException e) {
-
-        }
+        date = args.getString(DATE);
     }
 
     private void initBarChart() {
@@ -163,7 +156,7 @@ public class AppDailyUsageFragment extends BaseFragment implements AppDailyUsage
     }
 
     @Override
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 

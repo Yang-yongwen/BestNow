@@ -1,8 +1,6 @@
 package com.yyw.android.bestnow.appusage.dailyusage;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.view.View;
 
 import com.yyw.android.bestnow.NowApplication;
 import com.yyw.android.bestnow.R;
@@ -30,7 +28,7 @@ public class DailyUsageActivity extends BaseActivity {
         DailyUsageFragment fragment = (DailyUsageFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.main_content);
         if (fragment == null) {
-            String date=getIntent().getStringExtra("date");
+            String date = getIntent().getStringExtra("date");
             fragment = DailyUsageFragment.newInstance(date);
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fragment, R.id.main_content);
         }

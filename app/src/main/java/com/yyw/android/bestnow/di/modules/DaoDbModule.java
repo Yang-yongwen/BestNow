@@ -3,7 +3,6 @@ package com.yyw.android.bestnow.di.modules;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.yyw.android.bestnow.data.dao.App;
 import com.yyw.android.bestnow.data.dao.AppDao;
 import com.yyw.android.bestnow.data.dao.AppUsageDao;
 import com.yyw.android.bestnow.data.dao.DaoMaster;
@@ -17,7 +16,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Created by samsung on 2016/10/28.
+ * Created by yangyongwen on 2016/10/28.
  */
 
 @Module
@@ -52,13 +51,13 @@ public class DaoDbModule {
 
     @Provides
     @Singleton
-    AppDao providesAppDao(DaoSession daoSession){
+    AppDao providesAppDao(DaoSession daoSession) {
         return daoSession.getAppDao();
     }
 
     @Provides
     @Singleton
-    EventDao providesEventDao(DaoSession daoSession){
+    EventDao providesEventDao(DaoSession daoSession) {
         return daoSession.getEventDao();
     }
 

@@ -6,7 +6,7 @@ import android.app.job.JobService;
 import com.yyw.android.bestnow.NowApplication;
 
 /**
- * Created by samsung on 2016/10/31.
+ * Created by yangyongwen on 2016/10/31.
  */
 
 public class JobScheduleService extends JobService {

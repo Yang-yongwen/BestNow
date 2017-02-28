@@ -18,41 +18,42 @@ import com.yyw.android.bestnow.setting.activity.SettingCheckableAppActivity;
  * Created by yangyongwen on 16/12/11.
  */
 
-public class SettingFragment extends PreferenceFragment{
+public class SettingFragment extends PreferenceFragment {
     CheckBoxPreference notificationBox;
     SPUtils spUtils;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        spUtils= NowApplication.getApplicationComponent().provideSpUtils();
+        spUtils = NowApplication.getApplicationComponent().provideSpUtils();
         addPreferencesFromResource(R.xml.preference_setting);
         initView();
     }
 
-    private void initView(){
+    private void initView() {
         notificationBox = (CheckBoxPreference) findPreference("pref_show_notification");
-        notificationBox.setChecked(spUtils.getBooleanValue(UpdateService.SHOW_NOTIFICATION,true));
+        notificationBox.setChecked(spUtils.getBooleanValue(UpdateService.SHOW_NOTIFICATION, true));
     }
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        String key=preference.getKey();
-        if (key==null){
+        String key = preference.getKey();
+        if (key == null) {
             return false;
         }
-        if (key.equals("pref_set_checkable_app")){
-            Intent intent=new Intent(getActivity(), SettingCheckableAppActivity.class);
+        if (key.equals("pref_set_checkable_app")) {
+            Intent intent = new Intent(getActivity(), SettingCheckableAppActivity.class);
             startActivity(intent);
-        }else if (key.equals("pref_show_notification")){
-            spUtils.putBooleanValue(UpdateService.SHOW_NOTIFICATION,notificationBox.isChecked());
-            if (notificationBox.isChecked()){
+        } else if (key.equals("pref_show_notification")) {
+            spUtils.putBooleanValue(UpdateService.SHOW_NOTIFICATION, notificationBox.isChecked());
+            if (notificationBox.isChecked()) {
                 UpdateService.showNotification(getActivity());
-            }else {
+            } else {
                 UpdateService.hideNotification(getActivity());
             }
             return true;
-        }else if (key.equals("pref_set_usage_limit")){
-            Intent intent=new Intent(getActivity(), SettingAddTimeLimitActivity.class);
+        } else if (key.equals("pref_set_usage_limit")) {
+            Intent intent = new Intent(getActivity(), SettingAddTimeLimitActivity.class);
             startActivity(intent);
             return true;
         }

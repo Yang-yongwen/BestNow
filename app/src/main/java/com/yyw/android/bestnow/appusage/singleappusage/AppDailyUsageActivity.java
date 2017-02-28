@@ -2,8 +2,6 @@ package com.yyw.android.bestnow.appusage.singleappusage;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.view.View;
 
 import com.yyw.android.bestnow.NowApplication;
 import com.yyw.android.bestnow.R;

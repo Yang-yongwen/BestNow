@@ -10,9 +10,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by yangyongwen on 16/12/15.
@@ -43,14 +47,14 @@ public class EventRepository {
         eventDao.insertOrReplaceInTx(events);
     }
 
-    private void cancelEventsSchedule(String date){
+    private void cancelEventsSchedule(String date) {
         List<Event> events = getEvents(date);
         for (Event event : events) {
             cancelEventSchedule(event);
         }
     }
 
-    private void cancelEventSchedule(Event event){
+    private void cancelEventSchedule(Event event) {
         if (event.getHasAlarm() != null && event.getHasAlarm() == true
                 && (event.getDone() == null || event.getDone() == false)
                 && event.getAlarmTime() != null) {
@@ -58,7 +62,7 @@ public class EventRepository {
         }
     }
 
-    private void setEventSchedule(Event event){
+    private void setEventSchedule(Event event) {
         if (event.getHasAlarm() != null && event.getHasAlarm() == true
                 && (event.getDone() == null || event.getDone() == false)
                 && event.getAlarmTime() != null) {
@@ -66,8 +70,8 @@ public class EventRepository {
         }
     }
 
-    private void setEventsSchedule(List<Event> events){
-        for (Event event:events){
+    private void setEventsSchedule(List<Event> events) {
+        for (Event event : events) {
             setEventSchedule(event);
         }
     }
@@ -95,6 +99,18 @@ public class EventRepository {
         return events;
     }
 
+    public Observable<List<Event>> getEventsObservable(final String date) {
+
+        Observable.timer()
+
+        return Observable.fromCallable(new Callable<List<Event>>() {
+            @Override
+            public List<Event> call() throws Exception {
+                return getEvents(date);
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
     private List<Event> mapToList(Map<Long, Event> events) {
         List<Event> result = new ArrayList<>();
         result.addAll(events.values());
@@ -110,7 +126,7 @@ public class EventRepository {
     }
 
     public void initEventSchedule() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String date = simpleDateFormat.format(new Date());
         List<Event> todayEvents = getEvents(date);
         for (Event event : todayEvents) {

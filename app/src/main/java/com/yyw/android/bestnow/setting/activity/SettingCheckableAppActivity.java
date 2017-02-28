@@ -45,34 +45,34 @@ public class SettingCheckableAppActivity extends BaseActivity {
         initView();
     }
 
-    private void initView(){
+    private void initView() {
         initData();
         appListRV.setAdapter(appCheckedListAdapter);
         appListRV.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private void initData(){
-        appCheckedListAdapter =new AppCheckedListAdapter();
+    private void initData() {
+        appCheckedListAdapter = new AppCheckedListAdapter();
         List<PackageInfo> packageInfoList = getPackageManager()
                 .getInstalledPackages(PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
-        List<App> statisticApps=new ArrayList<>();
-        List<App> unStatisticApps=new ArrayList<>();
+        List<App> statisticApps = new ArrayList<>();
+        List<App> unStatisticApps = new ArrayList<>();
 
-        for (PackageInfo packageInfo:packageInfoList){
-            App app=appPool.get(packageInfo.packageName);
-            if (app!=null){
-                if (app.getShouldStatistic()){
+        for (PackageInfo packageInfo : packageInfoList) {
+            App app = appPool.get(packageInfo.packageName);
+            if (app != null) {
+                if (app.getShouldStatistic()) {
                     statisticApps.add(app);
-                }else {
+                } else {
                     unStatisticApps.add(app);
                 }
-            }else {
+            } else {
                 statisticApps.add(new App(packageInfo.packageName,
-                        AppInfoProvider.getInstance().getAppLabel(packageInfo.packageName),true,false,-1l));
+                        AppInfoProvider.getInstance().getAppLabel(packageInfo.packageName), true, false, -1l));
             }
         }
-        appCheckedListAdapter.statisticApps=statisticApps;
-        appCheckedListAdapter.unStatisticApps=unStatisticApps;
+        appCheckedListAdapter.statisticApps = statisticApps;
+        appCheckedListAdapter.unStatisticApps = unStatisticApps;
     }
 
     @Override
@@ -89,14 +89,14 @@ public class SettingCheckableAppActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_statistic_app_list,menu);
+        getMenuInflater().inflate(R.menu.menu_statistic_app_list, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id==R.id.action_delete){
+        if (id == R.id.action_delete) {
             appCheckedListAdapter.ensureDelete();
         }
         return super.onOptionsItemSelected(item);

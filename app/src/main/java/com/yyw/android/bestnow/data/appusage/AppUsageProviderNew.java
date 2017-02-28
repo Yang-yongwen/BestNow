@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by samsung on 2016/12/7.
+ * Created by yangyongwen on 2016/12/7.
  */
 
 public class AppUsageProviderNew {
@@ -198,7 +198,7 @@ public class AppUsageProviderNew {
 
     private Map<String, AppUsage> computeUsage(long startTime, long endTime) {
         List<UsageSlice> usageSlices = new ArrayList<>();
-        String lastPkg=null;
+        String lastPkg = null;
         MyEvent startEvent = new MyEvent();
         startEvent.packageName = lastEventPackage;
         startEvent.timeStamp = startTime;
@@ -226,7 +226,7 @@ public class AppUsageProviderNew {
                     && event.getEventType() != UsageEvents.Event.MOVE_TO_FOREGROUND) {
                 continue;
             }
-            lastPkg=event.getPackageName();
+            lastPkg = event.getPackageName();
             if (event.getPackageName().equals(endEvent.packageName)) {
                 endEvent = new MyEvent(event);
                 continue;
@@ -253,7 +253,7 @@ public class AppUsageProviderNew {
 
         lastUpdateTime = endTime;
         spUtils.putLongValue(LAST_UPDATE_TIME, lastUpdateTime);
-        if (lastPkg!=null) {
+        if (lastPkg != null) {
             lastEventPackage = lastPkg;
             spUtils.putStringValue(LAST_EVENT_PACKAGE, lastEventPackage);
         }

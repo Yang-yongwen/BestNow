@@ -5,7 +5,6 @@ import com.yyw.android.bestnow.archframework.BasePresenter;
 import com.yyw.android.bestnow.archframework.BaseView;
 import com.yyw.android.bestnow.data.dao.PerHourUsage;
 
-import java.util.Date;
 import java.util.List;
 
 import rx.Observable;
@@ -21,15 +20,15 @@ public interface AppDailyUsageContract {
 
         String getPackageName();
 
-        Date getDate();
+        String getDate();
     }
 
     interface Presenter extends BasePresenter {
-        void loadUsage(String packageName, Date date);
+        void loadUsage(String packageName, String date);
     }
 
     interface Model extends BaseModel {
-        Observable<List<PerHourUsage>> queryAppDailyUsage(String packageName, Date date);
+        Observable<List<PerHourUsage>> queryAppDailyUsage(String packageName, String date);
     }
 
 }

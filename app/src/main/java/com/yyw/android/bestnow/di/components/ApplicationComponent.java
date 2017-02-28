@@ -29,7 +29,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 /**
- * Created by samsung on 2016/10/27.
+ * Created by yangyongwen on 2016/10/27.
  */
 
 @Singleton

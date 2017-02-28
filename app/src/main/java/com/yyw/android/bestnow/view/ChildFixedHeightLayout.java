@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 /**
- * Created by samsung on 2016/11/2.
+ * Created by yangyongwen on 2016/11/2.
  */
 
 public class ChildFixedHeightLayout extends LinearLayout {

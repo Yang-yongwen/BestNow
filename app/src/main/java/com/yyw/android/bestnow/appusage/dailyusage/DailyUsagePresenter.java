@@ -2,11 +2,11 @@ package com.yyw.android.bestnow.appusage.dailyusage;
 
 import com.yyw.android.bestnow.data.dao.AppUsage;
 
-import java.util.Date;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -41,7 +41,7 @@ public class DailyUsagePresenter implements DailyUsageContract.Presenter {
     }
 
     @Override
-    public void loadUsage(Date start, Date end) {
+    public void loadUsage(String start, String end) {
         Subscription subscribe = appUsageModel
                 .queryAppUsage(start, end)
                 .observeOn(AndroidSchedulers.mainThread())

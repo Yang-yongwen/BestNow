@@ -27,13 +27,10 @@ import com.yyw.android.bestnow.archframework.BaseFragment;
 import com.yyw.android.bestnow.common.utils.DateUtils;
 import com.yyw.android.bestnow.data.dao.AppUsage;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -60,12 +57,10 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
     View chartStubView;
 
     DailyUsageAdapter dailyUsageAdapter;
-    PieData pieData;
     List<Integer> pieColors;
     List<AppUsage> appUsages;
     AppUsage selectedAppUsage;
-    Date date;
-    String dateString;
+    String date;
 
     public static DailyUsageFragment newInstance(String date) {
         DailyUsageFragment fragment = new DailyUsageFragment();
@@ -81,13 +76,8 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
         initRecyclerView();
         showListChart();
         initPieChar();
-        dateString = getArguments().getString("date");
-        try {
-            date = new SimpleDateFormat("yyyyMMdd").parse(dateString);
-            presenter.loadUsage(date, date);
-        } catch (ParseException e) {
-
-        }
+        date = getArguments().getString("date");
+        presenter.loadUsage(date, date);
     }
 
     private void initRecyclerView() {
@@ -192,7 +182,7 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
         }
         appUsages = toSortedList(appUsageMap.values());
         dailyUsageAdapter.setAppUsages(appUsages);
-        dailyUsageAdapter.setDate(dateString);
+        dailyUsageAdapter.setDate(date);
         setPieData(appUsages);
     }
 
@@ -267,7 +257,7 @@ public class DailyUsageFragment extends BaseFragment implements DailyUsageContra
             return;
         }
         intent.putExtra(AppDailyUsageFragment.PACKAGE_NAME, selectedAppUsage.getPackageName());
-        intent.putExtra(AppDailyUsageFragment.DATE, dateString);
+        intent.putExtra(AppDailyUsageFragment.DATE, date);
         startActivity(intent);
     }
 

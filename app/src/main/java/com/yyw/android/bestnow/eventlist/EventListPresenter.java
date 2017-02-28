@@ -1,6 +1,6 @@
-package com.yyw.android.bestnow.appusage.singleappusage;
+package com.yyw.android.bestnow.eventlist;
 
-import com.yyw.android.bestnow.data.dao.PerHourUsage;
+import com.yyw.android.bestnow.data.dao.Event;
 
 import java.util.List;
 
@@ -13,17 +13,17 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Created by yangyongwen on 16/12/3.
+ * Created by yangyongwen on 17/1/5.
  */
 
-public class AppDailyUsagePresenter implements AppDailyUsageContract.Presenter {
+public class EventListPresenter implements EventListContract.Presenter {
 
-    private AppDailyUsageContract.View view;
-    private AppDailyUsageContract.Model model;
+    private EventListContract.View view;
+    private EventListContract.Model model;
     private CompositeSubscription subscriptions;
 
     @Inject
-    AppDailyUsagePresenter(AppDailyUsageContract.View view, AppDailyUsageContract.Model model) {
+    EventListPresenter(EventListContract.View view, EventListContract.Model model) {
         this.model = model;
         this.view = view;
         subscriptions = new CompositeSubscription();
@@ -36,19 +36,19 @@ public class AppDailyUsagePresenter implements AppDailyUsageContract.Presenter {
 
     @Override
     public void start() {
-        loadUsage(view.getPackageName(), view.getDate());
+
     }
 
     @Override
-    public void loadUsage(String packageName, String date) {
-        Subscription subscription = model.queryAppDailyUsage(packageName, date)
+    public void loadEvents(String date) {
+        Subscription subscription = model.queryEvents(date)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
         subscriptions.add(subscription);
     }
 
-    private final Observer<List<PerHourUsage>> observer = new Observer<List<PerHourUsage>>() {
+    private final Observer<List<Event>> observer = new Observer<List<Event>>() {
         @Override
         public void onCompleted() {
 
@@ -60,10 +60,15 @@ public class AppDailyUsagePresenter implements AppDailyUsageContract.Presenter {
         }
 
         @Override
-        public void onNext(List<PerHourUsage> perHourUsages) {
-            view.displayUsageData(perHourUsages);
+        public void onNext(List<Event> events) {
+            view.displayEvents(events);
         }
     };
+
+    @Override
+    public void saveEvents(List<Event> events, String date) {
+        model.saveEvents(events, date);
+    }
 
     @Override
     public void onResume() {
@@ -79,7 +84,8 @@ public class AppDailyUsagePresenter implements AppDailyUsageContract.Presenter {
     public void onDestroy() {
         model.cleanUp();
         subscriptions.clear();
-        model = null;
         view = null;
+        model = null;
     }
+
 }

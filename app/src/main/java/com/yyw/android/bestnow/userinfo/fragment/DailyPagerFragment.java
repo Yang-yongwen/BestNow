@@ -14,22 +14,18 @@ import com.yyw.android.bestnow.R;
 import com.yyw.android.bestnow.archframework.BaseActivity;
 import com.yyw.android.bestnow.archframework.BaseFragment;
 import com.yyw.android.bestnow.common.utils.DateUtils;
-import com.yyw.android.bestnow.data.dao.AppUsage;
-import com.yyw.android.bestnow.data.dao.Event;
-import com.yyw.android.bestnow.userinfo.UserInfoContract;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
 
 /**
- * Created by samsung on 2016/11/3.
+ * Created by yangyongwen on 2016/11/3.
  */
 
-public class DailyPagerFragment extends BaseFragment{
+public class DailyPagerFragment extends BaseFragment {
     @BindView(R.id.daily_view_pager)
     ViewPager dailyPager;
     DailyPagerAdapter adapter;
@@ -50,11 +46,11 @@ public class DailyPagerFragment extends BaseFragment{
         adapter = new DailyPagerAdapter(getFragmentManager());
         dailyPager.setAdapter(adapter);
         dailyPager.setCurrentItem(adapter.getCount() - 1, false);
-        dailyPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+        dailyPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                String date=genSubTitle(position);
-                ((BaseActivity)getActivity()).setSubtitle(date);
+                String date = genSubTitle(position);
+                ((BaseActivity) getActivity()).setSubtitle(date);
             }
         });
     }
@@ -62,19 +58,18 @@ public class DailyPagerFragment extends BaseFragment{
     private String genSubTitle(int position) {
         int end = adapter.getCount() - 1;
         int offset = position - end;
-        if (offset==0){
+        if (offset == 0) {
             return "今天";
-        }else if (offset==-1){
+        } else if (offset == -1) {
             return "昨天";
         }
         Date today = new Date();
         Date date = DateUtils.offsetDays(today, offset);
-        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
-        return format.format(date);
+        return DateUtils.FORMAT_DAY.format(date);
     }
 
-    public void changeToDate(Date date){
-        int pos=adapter.computeFragmentPos(date);
+    public void changeToDate(Date date) {
+        int pos = adapter.computeFragmentPos(date);
         dailyPager.setCurrentItem(pos);
     }
 
@@ -97,7 +92,7 @@ public class DailyPagerFragment extends BaseFragment{
             if (position == getCount() - 1) {
                 return new TodayFragment();
             } else {
-                String date=computeFragmentDate(position);
+                String date = computeFragmentDate(position);
                 return DailyInfoFragment.newInstance(date);
             }
         }
@@ -113,8 +108,7 @@ public class DailyPagerFragment extends BaseFragment{
             int offset = position - end;
             Date today = new Date();
             Date date = DateUtils.offsetDays(today, offset);
-            SimpleDateFormat format=new SimpleDateFormat("yyyyMMdd");
-            return format.format(date);
+            return DateUtils.FORMAT_DAY.format(date);
         }
 
         public int computeFragmentPos(Date date) {
@@ -127,15 +121,15 @@ public class DailyPagerFragment extends BaseFragment{
 
         @Override
         public int getCount() {
-            String installDate= NowApplication.getInstance().getInstallDate();
-            Date date=null;
+            String installDate = NowApplication.getInstance().getInstallDate();
+            Date date = null;
             try {
-                date=new SimpleDateFormat("yyyyMMdd").parse(installDate);
-            }catch (Exception e){
+                date = new SimpleDateFormat("yyyy-MM-dd").parse(installDate);
+            } catch (Exception e) {
 
             }
-            int installedDays=DateUtils.daysBetween(date,new Date());
-            return installedDays+1;
+            int installedDays = DateUtils.daysBetween(date, new Date());
+            return installedDays + 1;
         }
 
         @Override

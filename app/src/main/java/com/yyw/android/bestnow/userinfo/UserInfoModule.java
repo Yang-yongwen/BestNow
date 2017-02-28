@@ -15,8 +15,8 @@ public class UserInfoModule {
 
     @Provides
     @FragmentScoped
-    UserInfoContract.Model providesUserInfoContractModel(UsageRepository repository, EventRepository eventRepository){
-        return new UserInfoModel(repository,eventRepository);
+    UserInfoContract.Model providesUserInfoContractModel(UsageRepository repository, EventRepository eventRepository) {
+        return new UserInfoModel(repository, eventRepository);
     }
 
 }
